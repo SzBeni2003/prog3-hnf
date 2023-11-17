@@ -1,3 +1,5 @@
+package untangle;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,7 +13,7 @@ public class Untangle extends JPanel {
     MouseAction ma=new MouseAction();
     int nodeDragged;
 
-    Untangle(){
+    public Untangle(){
         super();
         {//mintagráf
             ArrayList<Circle> v=new ArrayList<>();

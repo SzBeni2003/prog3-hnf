@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,7 +9,7 @@ public class MenuWindow extends JFrame {
     JButton untangle=new JButton("Play Untangle");
     JButton twiddle=new JButton("Play Twiddle");
     JButton exit=new JButton("Exit game");
-    MenuWindow(){
+    public MenuWindow(){
         super("Menu");
         setSize(600,800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -19,13 +21,13 @@ public class MenuWindow extends JFrame {
         untangle.addActionListener(new UntangleListener());
     }
 
-    class ExitButtonListener implements ActionListener{
+    static class ExitButtonListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
             Main.menuWindow.dispatchEvent(new WindowEvent(Main.menuWindow, WindowEvent.WINDOW_CLOSING));
         }
     }
-    class UntangleListener implements ActionListener{
+    static class UntangleListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
             Main.menuWindow.setVisible(false);
