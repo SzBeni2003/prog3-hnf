@@ -1,11 +1,11 @@
 import java.awt.geom.Ellipse2D;
 
 class Circle extends Ellipse2D.Float {
-    float x; //the x coordinate of the center point
-    float y; //the y coordinate of the center point
-    float radius;
+    int x; //the x coordinate of the center point
+    int y; //the y coordinate of the center point
+    int radius;
 
-    public Circle(float x, float y, float radius) {
+    public Circle(int x, int y, int radius) {
         setFrame(x-radius, y-radius, 2*radius, 2*radius);
         this.x=x;
         this.y=y;
@@ -13,9 +13,9 @@ class Circle extends Ellipse2D.Float {
     }
 
     public int getx() {
-        return (int) x;
+        return x;
     }
     public int gety() {
-        return (int) y;
+        return y;
     }
 }

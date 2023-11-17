@@ -1,11 +1,15 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Untangle extends JPanel {
     static Graph graph;
     Point offset;
     static private final int radius = 10;
+    MouseAction ma=new MouseAction();
+    int nodeDragged;
 
     Untangle(){
         super();
@@ -23,7 +27,48 @@ public class Untangle extends JPanel {
             e.add(e1);e.add(e2);e.add(e3);e.add(e4);
             graph=new Graph(v,e);
         }
+        addMouseListener(ma);
+        addMouseMotionListener(ma);
+    }
 
+    private class MouseAction extends MouseAdapter{
+        @Override
+        public void mousePressed(MouseEvent e) {
+            for(int i=0;i<graph.vertices.size();i++){
+                Circle node=graph.vertices.get(i);
+                if(node.contains(e.getPoint())){
+                    nodeDragged=i;
+                    offset=new Point(node.x-e.getX(),node.y-e.getY());
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            if(graph.vertices.get(nodeDragged).contains(e.getPoint())){
+                for(int i=0;i<graph.vertices.size();i++){
+                    if(i!=nodeDragged&&graph.vertices.get(i).contains(e.getPoint()))
+                        return;
+                }
+                updateLocation(e);
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            offset=null;
+            nodeDragged=-1;
+        }
+    }
+
+    public void updateLocation(MouseEvent e){
+        Point p=new Point(offset.x+e.getX(), offset.y+e.getY());
+        Circle c=graph.vertices.get(nodeDragged);
+        c.setFrame(p.x-radius,p.y-radius,2*radius,2*radius);
+        c.x=p.x;
+        c.y=p.y;
+        repaint();
     }
 
     public void paint(Graphics g){
