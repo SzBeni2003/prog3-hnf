@@ -17,21 +17,16 @@ public class MenuWindow extends JFrame {
         add(untangle);
         add(twiddle);
         add(exit);
-        exit.addActionListener(new ExitButtonListener());
-        untangle.addActionListener(new UntangleListener());
-    }
-
-    static class ExitButtonListener implements ActionListener{
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Main.menuWindow.dispatchEvent(new WindowEvent(Main.menuWindow, WindowEvent.WINDOW_CLOSING));
-        }
-    }
-    static class UntangleListener implements ActionListener{
-        @Override
-        public void actionPerformed(ActionEvent e) {
+        exit.addActionListener(e -> Main.menuWindow.dispatchEvent(new WindowEvent(Main.menuWindow, WindowEvent.WINDOW_CLOSING)));
+        untangle.addActionListener(e -> {
             Main.menuWindow.setVisible(false);
             Main.untangleWindow.setVisible(true);
-        }
+        });
+        twiddle.addActionListener(e->{
+            Main.menuWindow.setVisible(false);
+            Main.twiddleWindow.setVisible(true);
+            //Main.twiddle.game();
+        });
     }
+
 }
