@@ -1,4 +1,4 @@
-package untangle;
+package game.untangle;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;

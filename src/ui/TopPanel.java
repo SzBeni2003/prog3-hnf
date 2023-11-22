@@ -10,19 +10,15 @@ public class TopPanel extends JPanel {
     JButton newGame=new JButton("Elakadtál?");
     TopPanel(){
         super();
-        back.addActionListener(new BackListener());
+        back.addActionListener(e->{
+            Main.gameWindow.setVisible(false);
+            Main.gameWindow.closeGame();
+            Main.menuWindow.setVisible(true);
+        });
 
         add(back);
         add(GameSettings);
         add(newGame);
 
-    }
-
-    static class BackListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Main.untangleWindow.setVisible(false);
-            Main.menuWindow.setVisible(true);
-        }
     }
 }

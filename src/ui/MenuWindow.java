@@ -1,6 +1,7 @@
 package ui;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -20,12 +21,13 @@ public class MenuWindow extends JFrame {
         exit.addActionListener(e -> Main.menuWindow.dispatchEvent(new WindowEvent(Main.menuWindow, WindowEvent.WINDOW_CLOSING)));
         untangle.addActionListener(e -> {
             Main.menuWindow.setVisible(false);
-            Main.untangleWindow.setVisible(true);
+            Main.gameWindow.openGame(Main.untangle);
+            Main.gameWindow.setVisible(true);
         });
         twiddle.addActionListener(e->{
             Main.menuWindow.setVisible(false);
-            Main.twiddleWindow.setVisible(true);
-            //Main.twiddle.game();
+            Main.gameWindow.openGame(Main.twiddle);
+            Main.gameWindow.setVisible(true);
         });
     }
 
