@@ -1,4 +1,4 @@
-package twiddle;
+package game.twiddle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,16 +19,25 @@ public class SquareRotatable extends JComponent {
 
     // Polygon square;
     //Polygon triangle;
-
-    public SquareRotatable(double x, double y, double r, int tag){
+    public SquareRotatable(int tag){this(100,100,tag);}
+    public SquareRotatable(double x, double y, int tag){
         this.x=x;
         this.y=y;
-        this.r=r;
+        this.r=Twiddle.size;
         this.tag=tag;
     }
 
     public void setSpot(int spot) {
         this.spot = spot;
+        setCenterPoint((3+2*(spot%Twiddle.cells))*r,(3+2*(spot/Twiddle.cells))*r);
+    }
+    public void setCenterPoint(double x,double y){
+        this.x=x;
+        this.y=y;
+    }
+    public void setCenterPoint(int x,int y){
+        this.x=(int)x;
+        this.y=(int)y;
     }
 
     public void setTheta(double theta) {

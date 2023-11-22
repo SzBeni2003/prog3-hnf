@@ -12,7 +12,6 @@ public class TopPanel extends JPanel {
         super();
         back.addActionListener(e->{
             Main.gameWindow.setVisible(false);
-            Main.gameWindow.closeGame();
             Main.menuWindow.setVisible(true);
         });
 

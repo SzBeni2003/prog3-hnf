@@ -29,9 +29,6 @@ public class GameWindow extends JFrame {
         add(gameField,BorderLayout.CENTER);
     }
 
-    public void closeGame() {
-        //TODO
-    }
 
     static class CloseListener extends WindowAdapter{
         @Override
