@@ -29,7 +29,7 @@ public class SquareRotatable extends JComponent {
 
     public void setSpot(int spot) {
         this.spot = spot;
-        setCenterPoint((3+2*(spot%Twiddle.cells))*r,(3+2*(spot/Twiddle.cells))*r);
+        setCenterPoint(r+(1+spot%Twiddle.cells)*Twiddle.offset,r+(1+spot/Twiddle.cells)*Twiddle.offset);
     }
     public void setCenterPoint(double x,double y){
         this.x=x;
@@ -73,14 +73,14 @@ public class SquareRotatable extends JComponent {
         Graphics2D gd=(Graphics2D) g.create();
         gd.setColor(Color.GRAY);
         gd.fill(new Polygon(sxpoints,sypoints,4));
-        gd.setColor(Color.red);
+        gd.setColor(Color.lightGray);
         gd.fill(new Polygon(txpoints,typoints,3));
         String t=String.valueOf(tag);
         gd.setColor(Color.BLACK);
         gd.setFont(g.getFont().deriveFont(20f));
-        if(tag>9)
-            gd.drawString(t, (int) x-2, (int) y+10);
-        else gd.drawString(t,(int) x-5,(int) y+10);
+        if(tag<9)
+            gd.drawString(t, (int) x-5, (int) y+10);
+        else gd.drawString(t,(int) x-10,(int) y+10);
     }
 
     /*@Override

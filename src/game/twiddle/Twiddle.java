@@ -18,12 +18,13 @@ import static java.lang.Thread.sleep;
 public class Twiddle extends Game {
     static int cells;
     final static int size=47;
-    final static int offset=50;
+    final static int offset=100;
     static boolean animating;
     List<SquareRotatable> squares;
     SquareRotatable sq1=new SquareRotatable(300,100,10);
 
     public void rotate(SquareRotatable sq) {
+        //TODO:Implementing this for 2x2 blocks (different attributes)
         SwingWorker<Integer, Integer> rotater = new SwingWorker<>() {
             @Override
             protected Integer doInBackground() throws Exception {
@@ -53,6 +54,8 @@ public class Twiddle extends Game {
 
             @Override
             public void done(){
+                //TODO: ArrayList-ben helyükre tenni az elemeket; spotok módosítása
+                //TODO: win condition checking
                 animating=false;
             }
         };
@@ -64,7 +67,6 @@ public class Twiddle extends Game {
         setMinimumSize(new Dimension((n+2)*2*size,(n+2)*2*size));
         animating=false;
         cells=n;
-        //setLayout(new GridLayout(1,1));
         setLayout(new OverlayLayout(this));
         squares=new ArrayList<>();
 
@@ -73,9 +75,13 @@ public class Twiddle extends Game {
         }
         Collections.shuffle(squares);
         for(int i=0;i<n*n;i++){
+            //TODO:orientáció inicializálása (szummának milyennek kell lenni? 180/360?)
             squares.get(i).setSpot(i);
             add(squares.get(i));
         }*/
+
+        //TODO:láthatatlan gombok létrehozása és listenerek hozzáadása->rotate()
+
 
         squares.add(new SquareRotatable(100,100,1));
         squares.add(new SquareRotatable(100,200,3));
@@ -94,12 +100,4 @@ public class Twiddle extends Game {
         });
         setVisible(true);
     }
-
-    /*@Override
-    public void paintComponents(Graphics g) {
-        super.paintComponents(g);
-        for(SquareRotatable s:squares){
-            s.paintComponent(g);
-        }
-    }*/
 }

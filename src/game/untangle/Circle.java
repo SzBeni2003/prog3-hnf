@@ -1,5 +1,6 @@
 package game.untangle;
 
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 class Circle extends Ellipse2D.Float {
@@ -19,5 +20,9 @@ class Circle extends Ellipse2D.Float {
     }
     public int gety() {
         return y;
+    }
+    public boolean contains2(Point p){
+        Point translated=new Point(p.x+Untangle.offset.x,p.y+Untangle.offset.y);
+        return Point.distanceSq(x,y,translated.x,translated.y)<=4*radius*radius;
     }
 }

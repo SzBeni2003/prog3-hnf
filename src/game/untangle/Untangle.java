@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Untangle extends Game{
     static Graph graph;
-    Point offset;
+    static Point offset;
     static private final int radius = 10;
     MouseAction ma=new MouseAction();
     int nodeDragged;
@@ -18,6 +18,7 @@ public class Untangle extends Game{
     public Untangle(){
         super();
         {//mintagráf
+            //TODO: pályagenerálás
             ArrayList<Circle> v=new ArrayList<>();
             v.add(new Circle(100,100, radius));
             v.add(new Circle(200,100,radius));
@@ -50,9 +51,11 @@ public class Untangle extends Game{
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if(graph.vertices.get(nodeDragged).contains(e.getPoint())){
+            //if(graph.vertices.get(nodeDragged).contains(e.getPoint())){
+            if(nodeDragged!=-1){
+                //biztos hogy körökkel szeretnénk játszani, és nem négyzetekkel??
                 for(int i=0;i<graph.vertices.size();i++){
-                    if(i!=nodeDragged&&graph.vertices.get(i).contains(e.getPoint()))
+                    if(i!=nodeDragged&&graph.vertices.get(i).contains2(e.getPoint()))
                         return;
                 }
                 updateLocation(e);
@@ -63,6 +66,7 @@ public class Untangle extends Game{
         public void mouseReleased(MouseEvent e) {
             offset=null;
             nodeDragged=-1;
+            //TODO: win condition checking
         }
     }
 
@@ -85,15 +89,19 @@ public class Untangle extends Game{
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D gd=(Graphics2D) g.create();
-        gd.setColor(Color.blue);
-        for(Circle c: graph.vertices){
-            gd.fill(c);
-        }
         gd.setColor(Color.red);
         for(int[] e: graph.edges){
             Circle v1=graph.vertices.get(e[0]);
             Circle v2=graph.vertices.get(e[1]);
             gd.drawLine(v1.getx(),v1.gety(),v2.getx(),v2.gety());
+        }
+
+        for(Circle c: graph.vertices){
+            gd.setColor(Color.black);
+            gd.setStroke(new BasicStroke(3));
+            gd.draw(c);
+            gd.setColor(Color.blue);
+            gd.fill(c);
         }
     }
 }
