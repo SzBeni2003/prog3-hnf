@@ -2,11 +2,9 @@ package game.twiddle;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
-import java.lang.Math;
 import static java.lang.Math.PI;
 
 public class SquareRotatable extends JComponent {
@@ -17,8 +15,6 @@ public class SquareRotatable extends JComponent {
     int spot;
     int tag;
 
-    // Polygon square;
-    //Polygon triangle;
     public SquareRotatable(int tag){this(100,100,tag);}
     public SquareRotatable(double x, double y, int tag){
         this.x=x;
@@ -29,15 +25,15 @@ public class SquareRotatable extends JComponent {
 
     public void setSpot(int spot) {
         this.spot = spot;
-        setCenterPoint(r+(1+spot%Twiddle.cells)*Twiddle.offset,r+(1+spot/Twiddle.cells)*Twiddle.offset);
+        setCenterPoint((1.5+spot%Twiddle.cells)*Twiddle.offset,(1.5+spot/Twiddle.cells)*Twiddle.offset);
     }
     public void setCenterPoint(double x,double y){
         this.x=x;
         this.y=y;
     }
     public void setCenterPoint(int x,int y){
-        this.x=(int)x;
-        this.y=(int)y;
+        this.x= x;
+        this.y= y;
     }
 
     public void setTheta(double theta) {

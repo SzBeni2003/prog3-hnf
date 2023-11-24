@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -22,26 +21,47 @@ public class Twiddle extends Game {
     static boolean animating;
     List<SquareRotatable> squares;
     SquareRotatable sq1=new SquareRotatable(300,100,10);
+    List<Rectangle> buttons;
 
-    public void rotate(SquareRotatable sq) {
+    public void rotate(int block, int ccw) {
         //TODO:Implementing this for 2x2 blocks (different attributes)
+
+        SquareRotatable nw=squares.get(cells*block/(cells-1)+block%(cells-1));
+        SquareRotatable ne=squares.get(cells*block/(cells-1)+block%(cells-1)+1);
+        SquareRotatable sw=squares.get(cells*(1+block/(cells-1))+block%(cells-1));
+        SquareRotatable se=squares.get(cells*(1+block/(cells-1))+block%(cells-1)+1);
+
+        Point center=new Point((2+block%(cells-1))*offset,(2+block/(cells-1))*offset);
+
         SwingWorker<Integer, Integer> rotater = new SwingWorker<>() {
             @Override
             protected Integer doInBackground() throws Exception {
                 animating=true;
-                double x0=350;
-                double y0=150;
-                double theta=5*Math.PI/4;
-                double r=Math.sqrt(2)*50;
+                double theta=Math.PI/4;
+                double r=Math.sqrt(2)*offset/2;
                 for (int i = 0; i < 10; i++) {
                     try {
                         sleep(50);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    theta-=Math.PI / 20;
-                    sq.setCenterPoint(x0+r*Math.cos(theta),y0+r*Math.sin(theta));
-                    sq.setTheta(sq.theta - Math.PI / 20);
+                    theta-=ccw*Math.PI / 20;
+                    {
+                        se.setCenterPoint(center.x + r * Math.cos(theta), center.y + r * Math.sin(theta));
+                        se.setTheta(se.theta - ccw*Math.PI / 20);
+                    }
+                    {
+                        sw.setCenterPoint(center.x+r*Math.cos(theta+Math.PI/2),center.y+r*Math.sin(theta+Math.PI/2));
+                        sw.setTheta(sw.theta-ccw*Math.PI/20);
+                    }
+                    {
+                        nw.setCenterPoint(center.x+r*Math.cos(theta+Math.PI),center.y+r*Math.sin(theta+Math.PI));
+                        nw.setTheta(nw.theta-ccw*Math.PI/20);
+                    }
+                    {
+                        ne.setCenterPoint(center.x+r*Math.cos(theta-Math.PI/2),center.y+r*Math.sin(theta-Math.PI/2));
+                        ne.setTheta(ne.theta-ccw*Math.PI/20);
+                    }
                     publish(0);
                 }
                 return 0;
@@ -55,6 +75,17 @@ public class Twiddle extends Game {
             @Override
             public void done(){
                 //TODO: ArrayList-ben helyükre tenni az elemeket; spotok módosítása
+                if(ccw>0){
+                    squares.remove(nw);
+                    squares.remove(se);
+                    squares.add(cells*block/(cells-1)+block%(cells-1)+1,se);
+                    squares.add(cells*(1+block/(cells-1))+block%(cells-1),nw);
+                }else{
+                    squares.remove(ne);
+                    squares.remove(sw);
+                    squares.add(cells*block/(cells-1)+block%(cells-1),sw);
+                    squares.add(cells*(1+block/(cells-1))+block%(cells-1)+1,ne);
+                }
                 //TODO: win condition checking
                 animating=false;
             }
@@ -69,21 +100,26 @@ public class Twiddle extends Game {
         cells=n;
         setLayout(new OverlayLayout(this));
         squares=new ArrayList<>();
+        buttons=new ArrayList<>();
 
-        /*for(int i=0;i<n*n;i++){
+        for(int i=0;i<n*n;i++){
             squares.add(new SquareRotatable(i+1));
+        }
+        for(int i=0;i<(n-1)*(n-1);i++){
+            Rectangle rect=new Rectangle((2+i%(n-1))*offset-30,(2+i/(n-1))*offset-30,60,60);
+            buttons.add(rect);
         }
         Collections.shuffle(squares);
         for(int i=0;i<n*n;i++){
             //TODO:orientáció inicializálása (szummának milyennek kell lenni? 180/360?)
             squares.get(i).setSpot(i);
             add(squares.get(i));
-        }*/
+        }
 
         //TODO:láthatatlan gombok létrehozása és listenerek hozzáadása->rotate()
 
 
-        squares.add(new SquareRotatable(100,100,1));
+        /*squares.add(new SquareRotatable(100,100,1));
         squares.add(new SquareRotatable(100,200,3));
         squares.add(new SquareRotatable(200,100,2));
         squares.add(new SquareRotatable(200,200,4));
@@ -91,11 +127,11 @@ public class Twiddle extends Game {
         add(squares.get(1));
         add(squares.get(2));
         add(squares.get(3));
-        add(sq1);
+        add(sq1);*/
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                rotate(sq1);
+                if(!animating)rotate(0,1);
             }
         });
         setVisible(true);
