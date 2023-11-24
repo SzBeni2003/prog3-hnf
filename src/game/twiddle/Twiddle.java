@@ -24,12 +24,16 @@ public class Twiddle extends Game {
     List<Rectangle> buttons;
 
     public void rotate(int block, int ccw) {
-        //TODO:Implementing this for 2x2 blocks (different attributes)
 
-        SquareRotatable nw=squares.get(cells*block/(cells-1)+block%(cells-1));
-        SquareRotatable ne=squares.get(cells*block/(cells-1)+block%(cells-1)+1);
-        SquareRotatable sw=squares.get(cells*(1+block/(cells-1))+block%(cells-1));
-        SquareRotatable se=squares.get(cells*(1+block/(cells-1))+block%(cells-1)+1);
+        int row=block/(cells-1);
+        int col=block%(cells-1);
+
+        System.out.println(row+","+col+","+ccw);
+
+        SquareRotatable nw=squares.get(cells*row+col);
+        SquareRotatable ne=squares.get(cells*row+col+1);
+        SquareRotatable sw=squares.get(cells*(row+1)+col);
+        SquareRotatable se=squares.get(cells*(row+1)+col+1);
 
         Point center=new Point((2+block%(cells-1))*offset,(2+block/(cells-1))*offset);
 
@@ -64,6 +68,17 @@ public class Twiddle extends Game {
                     }
                     publish(0);
                 }
+                if(ccw>0){
+                    squares.remove(nw);
+                    squares.remove(se);
+                    squares.add(cells*row+col+1,se);
+                    squares.add(cells*(row+1)+col,nw);
+                }else{
+                    squares.remove(ne);
+                    squares.remove(sw);
+                    squares.add(cells*row+col,sw);
+                    squares.add(cells*(1+row)+col+1,ne);
+                }
                 return 0;
             }
 
@@ -74,18 +89,8 @@ public class Twiddle extends Game {
 
             @Override
             public void done(){
-                //TODO: ArrayList-ben helyükre tenni az elemeket; spotok módosítása
-                if(ccw>0){
-                    squares.remove(nw);
-                    squares.remove(se);
-                    squares.add(cells*block/(cells-1)+block%(cells-1)+1,se);
-                    squares.add(cells*(1+block/(cells-1))+block%(cells-1),nw);
-                }else{
-                    squares.remove(ne);
-                    squares.remove(sw);
-                    squares.add(cells*block/(cells-1)+block%(cells-1),sw);
-                    squares.add(cells*(1+block/(cells-1))+block%(cells-1)+1,ne);
-                }
+                //TODO: spotok módosítása??
+
                 //TODO: win condition checking
                 animating=false;
             }
@@ -131,7 +136,23 @@ public class Twiddle extends Game {
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if(!animating)rotate(0,1);
+                if(!animating){
+                    //rotate(0,1);
+                    int ccw;
+                    switch(e.getButton()){
+                        case MouseEvent.BUTTON3 -> {
+                            ccw=-1;
+                        }
+                        default -> {
+                            ccw=1;
+                        }
+                    }
+                    for(int i=0;i<buttons.size();i++){
+                        if(buttons.get(i).contains(e.getPoint())){
+                            rotate(i,ccw);
+                        }
+                    }
+                }
             }
         });
         setVisible(true);
