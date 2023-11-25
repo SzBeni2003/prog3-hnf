@@ -16,6 +16,8 @@ public class TopPanel extends JPanel {
         add(back);
         add(GameSettings);
         add(newGame);
-
+        newGame.addActionListener(e->{
+            Main.gameWindow.getGameField().generateGame();
+        });
     }
 }

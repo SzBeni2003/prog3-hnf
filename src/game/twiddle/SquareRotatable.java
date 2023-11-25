@@ -82,6 +82,10 @@ public class SquareRotatable extends JComponent {
         else gd.drawString(t,(int) x-10,(int) y+10);
     }
 
+    public int getTag() {
+        return tag;
+    }
+
     /*@Override
     public boolean contains(double x, double y) {
         if(theta%(Math.PI/2)==0){

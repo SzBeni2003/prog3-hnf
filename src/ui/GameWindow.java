@@ -12,11 +12,16 @@ public class GameWindow extends JFrame {
     BottomPanel bottom=new BottomPanel();
     public GameWindow(){
         super();
-        setMinimumSize(new Dimension(600,860));
+        setMinimumSize(new Dimension(600,600));
         setResizable(true);
         setVisible(false);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new CloseListener());
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                Main.gameWindow.setVisible(false);
+                Main.menuWindow.setVisible(true);
+            }
+        });
         gameField=Main.untangle;
 
         add(top, BorderLayout.NORTH);
@@ -27,15 +32,6 @@ public class GameWindow extends JFrame {
         remove(gameField);
         gameField=game;
         add(gameField,BorderLayout.CENTER);
-    }
-
-
-    static class CloseListener extends WindowAdapter{
-        @Override
-        public void windowClosing(WindowEvent e) {
-            Main.gameWindow.setVisible(false);
-            Main.menuWindow.setVisible(true);
-        }
     }
 
     public BottomPanel getBottom() {

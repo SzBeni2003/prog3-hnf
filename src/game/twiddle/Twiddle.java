@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.*;
 import java.lang.Math;
 import java.util.*;
 import java.util.List;
@@ -15,31 +16,68 @@ import java.util.List;
 import static java.lang.Thread.sleep;
 
 public class Twiddle extends Game {
+    private final File saveFile;
     static int cells;
     final static int size=47;
     final static int offset=100;
     static boolean animating=false;
     static boolean orientable;
     List<SquareRotatable> squares;
-    SquareRotatable sq1=new SquareRotatable(300,100,10);
     List<Rectangle> buttons;
 
     LinkedList<Move> prevMoves=new LinkedList<>();
     LinkedList<Move> nextMoves=new LinkedList<>();
 
 
+    public Twiddle(){
+        saveFile=new File("saves/twiddle.ser");
+        try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
+            cells=(Integer)ois.readObject();
+            orientable=(Boolean)ois.readObject();
+            squares=(ArrayList<SquareRotatable>) ois.readObject();
+            prevMoves=(LinkedList<Move>) ois.readObject();
+            nextMoves=(LinkedList<Move>) ois.readObject();
+
+            for(SquareRotatable sq:squares){
+                add(sq);
+            }
+
+            buttons=new ArrayList<>();
+            for(int i=0;i<(cells-1)*(cells-1);i++){
+                Rectangle rect=new Rectangle((2+i%(cells-1))*offset-30,(2+i/(cells-1))*offset-30,60,60);
+                buttons.add(rect);
+            }
+        }catch(IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        setMinimumSize(new Dimension((cells+2)*2*size,(cells+2)*2*size));
+        setLayout(new OverlayLayout(this));
+        addMouseListener(new MouseAdapter() {
+             public void mouseClicked(MouseEvent e) {
+                 if (!animating) {
+                     //rotate(0,1);
+                     boolean ccw = e.getButton() != MouseEvent.BUTTON3;
+                     for (int i = 0; i < buttons.size(); i++) {
+                         if (buttons.get(i).contains(e.getPoint())) {
+                             Move move = new Move(i, ccw);
+                             rotate(move);
+                             prevMoves.addFirst(move);
+                             nextMoves = new LinkedList<>();
+                             Main.getGameWindow().getBottom().setUndo(true);
+                             Main.getGameWindow().getBottom().setRedo(false);
+                         }
+                     }
+                 }
+             }
+        });
+        setVisible(true);
+    }
     public Twiddle(int n, boolean o){
-        super();
+        saveFile=new File("saves/twiddle.ser");
         setMinimumSize(new Dimension((n+2)*2*size,(n+2)*2*size));
         setLayout(new OverlayLayout(this));
-        squares=new ArrayList<>();
-        buttons=new ArrayList<>();
-        generateGame(n,o);
 
-        for(int i=0;i<(n-1)*(n-1);i++){
-            Rectangle rect=new Rectangle((2+i%(n-1))*offset-30,(2+i/(n-1))*offset-30,60,60);
-            buttons.add(rect);
-        }
+        generateGame(n,o);
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -51,7 +89,9 @@ public class Twiddle extends Game {
                             Move move=new Move(i,ccw);
                             rotate(move);
                             prevMoves.addFirst(move);
+                            nextMoves=new LinkedList<>();
                             Main.getGameWindow().getBottom().setUndo(true);
+                            Main.getGameWindow().getBottom().setRedo(false);
                         }
                     }
                 }
@@ -60,7 +100,7 @@ public class Twiddle extends Game {
         setVisible(true);
     }
 
-    class Move{
+    class Move implements Serializable{
         int pos;
         boolean ccw;
         public Move(int p,boolean c){
@@ -69,6 +109,9 @@ public class Twiddle extends Game {
         }
         public Move undoMove(){
             return new Move(pos,!ccw);
+        }
+        public String toString(){
+            return pos+","+ccw;
         }
     }
 
@@ -166,44 +209,104 @@ public class Twiddle extends Game {
 
             @Override
             public void done(){
-                //TODO: spotok módosítása??
-
                 //TODO: win condition checking
+
                 animating=false;
             }
         };
         rotater.execute();
     }
 
-    public void generateGame(int n,boolean o){
-        cells=n;
-        orientable=o;
-        for(int i=0;i<n*n;i++){
+    public void finishGame(){
+
+    }
+
+    @Override
+    public void generateGame() {
+        for(SquareRotatable sq:squares){
+            remove(sq);
+        }
+        buttons=new ArrayList<>();
+        for(int i=0;i<(cells-1)*(cells-1);i++){
+            Rectangle rect=new Rectangle((2+i%(cells-1))*offset-30,(2+i/(cells-1))*offset-30,60,60);
+            buttons.add(rect);
+        }
+
+        squares=new ArrayList<>();
+        for(int i=0;i<cells*cells;i++){
             squares.add(new SquareRotatable(i+1));
         }
         Collections.shuffle(squares);
         int rotsum=0;
         Random r=new Random();
-        for(int i=0;i<n*n;i++){
-            //TODO:orientáció inicializálása (szummának milyennek kell lenni - 360°)
+        for(int i=0;i<cells*cells;i++) {
+            int goal = squares.get(i).getTag() - 1;
+            int irow = i / cells;
+            int icol = i % cells;
+            int grow = goal / cells;
+            int gcol = goal % cells;
+
             int rot;
-            if(i<n*n-1) {
-                rot = r.nextInt(4);
-            }else{
-                rot=-(rotsum%4);
+            if (i + 1 < cells * cells) {
+                rot = (2 * r.nextInt(2) + irow - grow + icol - gcol) % 4;
+                squares.get(i).setTheta(rot * Math.PI / 2);
+                rotsum += rot;
+            } else {
+                rot = -(rotsum % 4);
+                squares.get(i).setTheta(rot * Math.PI / 2);
+                rotsum += rot;
             }
-            squares.get(i).setTheta(rot * Math.PI / 2);
-            rotsum += rot;
+
             squares.get(i).setSpot(i);
             add(squares.get(i));
         }
+        prevMoves=new LinkedList<>();
+        nextMoves=new LinkedList<>();
+
+        Main.getGameWindow().getBottom().setRedo(false);
+        Main.getGameWindow().getBottom().setUndo(false);
+
+        setVisible(false);
+        setVisible(true);
+    }
+    public void generateGame(int n,boolean o){
+        cells=n;
+        orientable=o;
+        generateGame();
     }
     @Override
     public void loadGame(){
+        try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
+            cells=(Integer)ois.readObject();
+            orientable=(Boolean)ois.readObject();
+            squares=(ArrayList<SquareRotatable>) ois.readObject();
+            prevMoves=(LinkedList<Move>) ois.readObject();
+            nextMoves=(LinkedList<Move>) ois.readObject();
 
+            for(SquareRotatable sq:squares){
+                add(sq);
+            }
+
+            buttons=new ArrayList<>();
+            for(int i=0;i<(cells-1)*(cells-1);i++){
+                Rectangle rect=new Rectangle((2+i%(cells-1))*offset-30,(2+i/(cells-1))*offset-30,60,60);
+                buttons.add(rect);
+            }
+        }catch(IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
     @Override
     public void saveGame(){
-
+        try(ObjectOutputStream ous=new ObjectOutputStream(new FileOutputStream(saveFile))){
+            ous.writeObject(cells);
+            ous.writeObject(orientable);
+            ous.writeObject(squares);
+            ous.writeObject(prevMoves);
+            ous.writeObject(nextMoves);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 }

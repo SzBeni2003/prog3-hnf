@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class MenuWindow extends JFrame {
@@ -19,6 +20,13 @@ public class MenuWindow extends JFrame {
         add(twiddle);
         add(exit);
         exit.addActionListener(e -> Main.menuWindow.dispatchEvent(new WindowEvent(Main.menuWindow, WindowEvent.WINDOW_CLOSING)));
+        addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Main.untangle.saveGame();
+                Main.twiddle.saveGame();
+            }
+        });
         untangle.addActionListener(e -> {
             Main.menuWindow.setVisible(false);
             Main.gameWindow.openGame(Main.untangle);
