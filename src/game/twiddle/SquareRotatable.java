@@ -12,7 +12,6 @@ public class SquareRotatable extends JComponent {
     double y;
     double r;
     double theta;
-    int spot;
     int tag;
 
     public SquareRotatable(int tag){this(100,100,tag);}
@@ -24,7 +23,6 @@ public class SquareRotatable extends JComponent {
     }
 
     public void setSpot(int spot) {
-        this.spot = spot;
         setCenterPoint((1.5+spot%Twiddle.cells)*Twiddle.offset,(1.5+spot/Twiddle.cells)*Twiddle.offset);
     }
     public void setCenterPoint(double x,double y){
@@ -42,6 +40,8 @@ public class SquareRotatable extends JComponent {
 
     @Override
     public void paintComponent(Graphics g){
+        Graphics2D gd=(Graphics2D) g.create();
+
         double q=sqrt(2)*r;
         int[] sxpoints={
                 (int) (x+q*cos(theta+PI/4)),
@@ -55,26 +55,29 @@ public class SquareRotatable extends JComponent {
                 (int) (y+q*sin(theta+5*PI/4)),
                 (int) (y+q*sin(theta+7*PI/4))
         };
-        int[] txpoints={
-                (int) (x-0.8*r*cos(theta-PI/6)),
-                (int) (x-0.8*r*cos(theta+0.5*PI)),
-                (int) (x-0.8*r*cos(theta+7*PI/6))
-        };
-        double s=0.15*r*sin(PI/2+theta);
-        int[] typoints={
-                (int) (y+s-0.8*r*sin(theta-PI/6)),
-                (int) (y+s-0.8*r*sin(theta+0.5*PI)),
-                (int) (y+s-0.8*r*sin(theta+7*PI/6))
-        };
-        Graphics2D gd=(Graphics2D) g.create();
         gd.setColor(Color.GRAY);
         gd.fill(new Polygon(sxpoints,sypoints,4));
-        gd.setColor(Color.lightGray);
-        gd.fill(new Polygon(txpoints,typoints,3));
+
+        if(Twiddle.orientable) {
+            int[] txpoints = {
+                    (int) (x - 0.8 * r * cos(theta - PI / 6)),
+                    (int) (x - 0.8 * r * cos(theta + 0.5 * PI)),
+                    (int) (x - 0.8 * r * cos(theta + 7 * PI / 6))
+            };
+            double s = 0.15 * r * sin(PI / 2 + theta);
+            int[] typoints = {
+                    (int) (y + s - 0.8 * r * sin(theta - PI / 6)),
+                    (int) (y + s - 0.8 * r * sin(theta + 0.5 * PI)),
+                    (int) (y + s - 0.8 * r * sin(theta + 7 * PI / 6))
+            };
+            gd.setColor(Color.lightGray);
+            gd.fill(new Polygon(txpoints, typoints, 3));
+        }
+
         String t=String.valueOf(tag);
         gd.setColor(Color.BLACK);
         gd.setFont(g.getFont().deriveFont(20f));
-        if(tag<9)
+        if(tag<=9)
             gd.drawString(t, (int) x-5, (int) y+10);
         else gd.drawString(t,(int) x-10,(int) y+10);
     }

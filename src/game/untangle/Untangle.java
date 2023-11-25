@@ -17,24 +17,12 @@ public class Untangle extends Game{
 
     public Untangle(){
         super();
-        {//mintagráf
-            //TODO: pályagenerálás
-            ArrayList<Circle> v=new ArrayList<>();
-            v.add(new Circle(100,100, radius));
-            v.add(new Circle(200,100,radius));
-            v.add(new Circle(100,200,radius));
-            v.add(new Circle(200,200,radius));
-            int[] e1={0,1};
-            int[] e2={0,2};
-            int[] e3={1,3};
-            int[] e4={1,2};
-            ArrayList<int[]> e=new ArrayList<>();
-            e.add(e1);e.add(e2);e.add(e3);e.add(e4);
-            graph=new Graph(v,e);
-        }
+        generateGame();
+
         addMouseListener(ma);
         addMouseMotionListener(ma);
     }
+
 
     private class MouseAction extends MouseAdapter{
         @Override
@@ -103,5 +91,42 @@ public class Untangle extends Game{
             gd.setColor(Color.blue);
             gd.fill(c);
         }
+    }
+
+    public void generateGame() {
+        //mintagráf
+        //TODO: pályagenerálás
+        ArrayList<Circle> v=new ArrayList<>();
+        v.add(new Circle(100,100, radius));
+        v.add(new Circle(200,100,radius));
+        v.add(new Circle(100,200,radius));
+        v.add(new Circle(200,200,radius));
+        int[] e1={0,1};
+        int[] e2={0,2};
+        int[] e3={1,3};
+        int[] e4={1,2};
+        ArrayList<int[]> e=new ArrayList<>();
+        e.add(e1);e.add(e2);e.add(e3);e.add(e4);
+        graph=new Graph(v,e);
+    }
+
+    @Override
+    public void loadGame() {
+
+    }
+
+    @Override
+    public void saveGame() {
+
+    }
+
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
+    public void redo() {
+
     }
 }

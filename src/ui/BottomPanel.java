@@ -8,5 +8,19 @@ public class BottomPanel extends JPanel {
     BottomPanel(){
         add(undo);
         add(redo);
+        undo.addActionListener(e->{
+            Main.gameWindow.gameField.undo();
+        });
+        redo.addActionListener(e->{
+            Main.gameWindow.gameField.redo();
+        });
+        undo.setEnabled(false);
+        redo.setEnabled(false);
+    }
+    public void setUndo(boolean active){
+        undo.setEnabled(active);
+    }
+    public void setRedo(boolean active){
+        redo.setEnabled(active);
     }
 }

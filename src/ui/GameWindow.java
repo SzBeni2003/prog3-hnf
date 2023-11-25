@@ -37,4 +37,12 @@ public class GameWindow extends JFrame {
             Main.menuWindow.setVisible(true);
         }
     }
+
+    public BottomPanel getBottom() {
+        return bottom;
+    }
+
+    public Game getGameField() {
+        return gameField;
+    }
 }
