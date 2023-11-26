@@ -5,10 +5,14 @@ import java.io.File;
 import java.io.Serializable;
 
 public abstract class Game extends JPanel implements Serializable {
+    public class Move{}
+
     public abstract void loadGame();
     public abstract void saveGame();
     public abstract void generateGame();
 
     public abstract void undo();
     public abstract void redo();
+
+    public abstract Class<?> getGameType();
 }

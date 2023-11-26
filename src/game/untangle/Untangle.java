@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class Untangle extends Game{
+    static int nodes;
     static Graph graph;
     static Point offset;
     static private final int radius = 10;
@@ -110,6 +111,10 @@ public class Untangle extends Game{
         e.add(e1);e.add(e2);e.add(e3);e.add(e4);
         graph=new Graph(v,e);
     }
+    public void generateGame(int n){
+        nodes=n;
+        generateGame();
+    }
 
     @Override
     public void loadGame() {
@@ -129,5 +134,10 @@ public class Untangle extends Game{
     @Override
     public void redo() {
 
+    }
+
+    @Override
+    public Class<?> getGameType() {
+        return Untangle.class;
     }
 }

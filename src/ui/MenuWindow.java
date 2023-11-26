@@ -1,19 +1,24 @@
 package ui;
 
+import game.twiddle.Twiddle;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 
 public class MenuWindow extends JFrame {
+    HashMap<JMenuItem, Twiddle.TwiddleMove> twiddleOptions;
+
     JButton untangle=new JButton("Play Untangle");
     JButton twiddle=new JButton("Play Twiddle");
     JButton exit=new JButton("Exit game");
     public MenuWindow(){
         super("Menu");
-        setSize(600,800);
+        setSize(300,300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
         add(untangle);
@@ -30,13 +35,27 @@ public class MenuWindow extends JFrame {
         untangle.addActionListener(e -> {
             Main.menuWindow.setVisible(false);
             Main.gameWindow.openGame(Main.untangle);
+            Main.gameWindow.top.setName("Untangle");
             Main.gameWindow.setVisible(true);
         });
         twiddle.addActionListener(e->{
             Main.menuWindow.setVisible(false);
             Main.gameWindow.openGame(Main.twiddle);
+            Main.gameWindow.top.setName("Twiddle");
+            Main.gameWindow.top.setSizeOptions(twiddleOptions);
             Main.gameWindow.setVisible(true);
         });
+
+        twiddleOptions=new HashMap<>();
+        twiddleOptions.put(new JMenuItem("3x3, normal"),new Twiddle.TwiddleMove(3,false));
+        twiddleOptions.put(new JMenuItem("3x3, orientable"),new Twiddle.TwiddleMove(3,true));
+        twiddleOptions.put(new JMenuItem("4x4, normal"),new Twiddle.TwiddleMove(4,false));
+        twiddleOptions.put(new JMenuItem("4x4, orientable"),new Twiddle.TwiddleMove(4,true));
+        twiddleOptions.put(new JMenuItem("5x5, normal"),new Twiddle.TwiddleMove(5,false));
+        twiddleOptions.put(new JMenuItem("5x5, orientable"),new Twiddle.TwiddleMove(5, true));
+        twiddleOptions.put(new JMenuItem("6x6, normal"),new Twiddle.TwiddleMove(6,false));
+        twiddleOptions.put(new JMenuItem("6x6, orientable"), new Twiddle.TwiddleMove(6, true));
+
     }
 
 }

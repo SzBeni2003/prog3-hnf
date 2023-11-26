@@ -1,6 +1,7 @@
 package game.twiddle;
 
 import game.Game;
+import game.Game.Move;
 import ui.Main;
 
 import javax.swing.*;
@@ -22,16 +23,16 @@ public class Twiddle extends Game {
     final static int offset=100;
     static boolean animating=false;
     static boolean orientable;
-    List<SquareRotatable> squares;
-    List<Rectangle> buttons;
+    List<SquareRotatable> squares=new ArrayList<>();
+    List<Rectangle> buttons=new ArrayList<>();
 
-    LinkedList<Move> prevMoves=new LinkedList<>();
-    LinkedList<Move> nextMoves=new LinkedList<>();
+    LinkedList<TwiddleMove> prevMoves=new LinkedList<>();
+    LinkedList<TwiddleMove> nextMoves=new LinkedList<>();
 
 
     public Twiddle(){
         saveFile=new File("saves/twiddle.ser");
-        try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
+        /*try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
             cells=(Integer)ois.readObject();
             orientable=(Boolean)ois.readObject();
             squares=(ArrayList<SquareRotatable>) ois.readObject();
@@ -49,7 +50,8 @@ public class Twiddle extends Game {
             }
         }catch(IOException | ClassNotFoundException e){
             e.printStackTrace();
-        }
+        }*/
+        loadGame();
         setMinimumSize(new Dimension((cells+2)*2*size,(cells+2)*2*size));
         setLayout(new OverlayLayout(this));
         addMouseListener(new MouseAdapter() {
@@ -59,7 +61,7 @@ public class Twiddle extends Game {
                      boolean ccw = e.getButton() != MouseEvent.BUTTON3;
                      for (int i = 0; i < buttons.size(); i++) {
                          if (buttons.get(i).contains(e.getPoint())) {
-                             Move move = new Move(i, ccw);
+                             TwiddleMove move = new TwiddleMove(i, ccw);
                              rotate(move);
                              prevMoves.addFirst(move);
                              nextMoves = new LinkedList<>();
@@ -86,7 +88,7 @@ public class Twiddle extends Game {
                     boolean ccw=e.getButton()!=MouseEvent.BUTTON3;
                     for(int i=0;i<buttons.size();i++){
                         if(buttons.get(i).contains(e.getPoint())){
-                            Move move=new Move(i,ccw);
+                            TwiddleMove move=new TwiddleMove(i,ccw);
                             rotate(move);
                             prevMoves.addFirst(move);
                             nextMoves=new LinkedList<>();
@@ -100,15 +102,15 @@ public class Twiddle extends Game {
         setVisible(true);
     }
 
-    class Move implements Serializable{
+    public static class TwiddleMove implements Serializable{
         int pos;
         boolean ccw;
-        public Move(int p,boolean c){
+        public TwiddleMove(int p,boolean c){
             pos=p;
             ccw=c;
         }
-        public Move undoMove(){
-            return new Move(pos,!ccw);
+        public TwiddleMove undoMove(){
+            return new TwiddleMove(pos,!ccw);
         }
         public String toString(){
             return pos+","+ccw;
@@ -119,7 +121,7 @@ public class Twiddle extends Game {
     @Override
     public void undo(){
         if(!animating&&!prevMoves.isEmpty()){
-            Move move=prevMoves.removeFirst();
+            TwiddleMove move=prevMoves.removeFirst();
             rotate(move.undoMove());
             nextMoves.addFirst(move);
             if(prevMoves.isEmpty()){
@@ -132,7 +134,7 @@ public class Twiddle extends Game {
     @Override
     public void redo() {
         if(!animating&&!nextMoves.isEmpty()){
-            Move move=nextMoves.removeFirst();
+            TwiddleMove move=nextMoves.removeFirst();
             rotate(move);
             prevMoves.addFirst(move);
             if(nextMoves.isEmpty()){
@@ -142,7 +144,7 @@ public class Twiddle extends Game {
         }
     }
 
-    public void rotate(Move m) {
+    public void rotate(TwiddleMove m) {
 
         int row=m.pos/(cells-1);
         int col=m.pos%(cells-1);
@@ -266,6 +268,8 @@ public class Twiddle extends Game {
         Main.getGameWindow().getBottom().setRedo(false);
         Main.getGameWindow().getBottom().setUndo(false);
 
+        saveGame();
+
         setVisible(false);
         setVisible(true);
     }
@@ -274,14 +278,20 @@ public class Twiddle extends Game {
         orientable=o;
         generateGame();
     }
+    public void generateGame(TwiddleMove m){
+        generateGame(m.pos,m.ccw);
+    }
     @Override
     public void loadGame(){
+        for(SquareRotatable sq:squares){
+            remove(sq);
+        }
         try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
             cells=(Integer)ois.readObject();
             orientable=(Boolean)ois.readObject();
             squares=(ArrayList<SquareRotatable>) ois.readObject();
-            prevMoves=(LinkedList<Move>) ois.readObject();
-            nextMoves=(LinkedList<Move>) ois.readObject();
+            prevMoves=(LinkedList<TwiddleMove>) ois.readObject();
+            nextMoves=(LinkedList<TwiddleMove>) ois.readObject();
 
             for(SquareRotatable sq:squares){
                 add(sq);
@@ -295,6 +305,8 @@ public class Twiddle extends Game {
         }catch(IOException | ClassNotFoundException e){
             e.printStackTrace();
         }
+        setVisible(false);
+        setVisible(true);
     }
     @Override
     public void saveGame(){
@@ -309,4 +321,8 @@ public class Twiddle extends Game {
         }
     }
 
+    @Override
+    public Class<?> getGameType(){
+        return Twiddle.class;
+    }
 }

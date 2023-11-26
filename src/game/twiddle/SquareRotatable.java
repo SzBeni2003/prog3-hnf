@@ -86,20 +86,4 @@ public class SquareRotatable extends JComponent {
         return tag;
     }
 
-    /*@Override
-    public boolean contains(double x, double y) {
-        if(theta%(Math.PI/2)==0){
-            return (x<=this.x+r)&&(x>=this.x-r)&&(y<=this.y+r)&&(y>=this.y-r);
-        }else{
-            double b1= Math.abs((Math.sin(theta)/r)*(y-this.y+(x-this.x)/Math.tan(theta)));
-            double b2= Math.abs((Math.sin(theta-Math.PI/2)/r)*(y-this.y+(x-this.x)/Math.tan(theta-Math.PI/2)));
-            return (b1<=1)&&(b2<=1);
-        }
-    }*/
-
-    /*@Override
-    public boolean contains(Point2D p) {
-        return contains(p.getX(),p.getY());
-    }*/
-
 }
