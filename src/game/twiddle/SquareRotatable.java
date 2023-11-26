@@ -23,7 +23,7 @@ public class SquareRotatable extends JComponent {
     }
 
     public void setSpot(int spot) {
-        setCenterPoint((1.5+spot%Twiddle.cells)*Twiddle.offset,(1.5+spot/Twiddle.cells)*Twiddle.offset);
+        setCenterPoint((1.25+spot%Twiddle.cells)*Twiddle.offset,(1+spot/Twiddle.cells)*Twiddle.offset);
     }
     public void setCenterPoint(double x,double y){
         this.x=x;

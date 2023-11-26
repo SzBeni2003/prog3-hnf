@@ -43,6 +43,7 @@ public class MenuWindow extends JFrame {
             Main.gameWindow.openGame(Main.twiddle);
             Main.gameWindow.top.setName("Twiddle");
             Main.gameWindow.top.setSizeOptions(twiddleOptions);
+            Main.twiddle.setSizes();
             Main.gameWindow.setVisible(true);
         });
 

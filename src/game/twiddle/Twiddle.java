@@ -1,7 +1,6 @@
 package game.twiddle;
 
 import game.Game;
-import game.Game.Move;
 import ui.Main;
 
 import javax.swing.*;
@@ -18,7 +17,7 @@ import static java.lang.Thread.sleep;
 
 public class Twiddle extends Game {
     private final File saveFile;
-    static int cells;
+    public static int cells;
     final static int size=47;
     final static int offset=100;
     static boolean animating=false;
@@ -32,27 +31,9 @@ public class Twiddle extends Game {
 
     public Twiddle(){
         saveFile=new File("saves/twiddle.ser");
-        /*try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
-            cells=(Integer)ois.readObject();
-            orientable=(Boolean)ois.readObject();
-            squares=(ArrayList<SquareRotatable>) ois.readObject();
-            prevMoves=(LinkedList<Move>) ois.readObject();
-            nextMoves=(LinkedList<Move>) ois.readObject();
 
-            for(SquareRotatable sq:squares){
-                add(sq);
-            }
-
-            buttons=new ArrayList<>();
-            for(int i=0;i<(cells-1)*(cells-1);i++){
-                Rectangle rect=new Rectangle((2+i%(cells-1))*offset-30,(2+i/(cells-1))*offset-30,60,60);
-                buttons.add(rect);
-            }
-        }catch(IOException | ClassNotFoundException e){
-            e.printStackTrace();
-        }*/
         loadGame();
-        setMinimumSize(new Dimension((cells+2)*2*size,(cells+2)*2*size));
+        setSizes();
         setLayout(new OverlayLayout(this));
         addMouseListener(new MouseAdapter() {
              public void mouseClicked(MouseEvent e) {
@@ -76,7 +57,7 @@ public class Twiddle extends Game {
     }
     public Twiddle(int n, boolean o){
         saveFile=new File("saves/twiddle.ser");
-        setMinimumSize(new Dimension((n+2)*2*size,(n+2)*2*size));
+        setSizes();
         setLayout(new OverlayLayout(this));
 
         generateGame(n,o);
@@ -157,7 +138,7 @@ public class Twiddle extends Game {
         SquareRotatable sw=squares.get(cells*(row+1)+col);
         SquareRotatable se=squares.get(cells*(row+1)+col+1);
 
-        Point center=new Point((2+m.pos%(cells-1))*offset,(2+m.pos/(cells-1))*offset);
+        Point center=new Point((int) ((1.75+m.pos%(cells-1))*offset), (int) ((1.5+m.pos/(cells-1))*offset));
 
         SwingWorker<Integer, Integer> rotater = new SwingWorker<>() {
             @Override
@@ -228,11 +209,7 @@ public class Twiddle extends Game {
         for(SquareRotatable sq:squares){
             remove(sq);
         }
-        buttons=new ArrayList<>();
-        for(int i=0;i<(cells-1)*(cells-1);i++){
-            Rectangle rect=new Rectangle((2+i%(cells-1))*offset-30,(2+i/(cells-1))*offset-30,60,60);
-            buttons.add(rect);
-        }
+        setButtons();
 
         squares=new ArrayList<>();
         for(int i=0;i<cells*cells;i++){
@@ -273,9 +250,28 @@ public class Twiddle extends Game {
         setVisible(false);
         setVisible(true);
     }
+
+    private void setButtons() {
+        buttons=new ArrayList<>();
+        for(int i=0;i<(cells-1)*(cells-1);i++){
+            Rectangle rect=new Rectangle((int) ((1.75+i%(cells-1))*offset-30), (int) ((1.5+i/(cells-1))*offset-30),60,60);
+            buttons.add(rect);
+        }
+    }
+    public void setSizes(){
+        setMinimumSize(new Dimension((int) ((cells+1.5)*offset),(cells+1)*offset));
+        if(Main.getGameWindow()!=null) {
+            Main.getGameWindow().setMinimumSize(new Dimension((int) ((cells + 1.5) * offset), (cells + 1) * offset + 150));
+            Main.getGameWindow().setSize(new Dimension((int) ((cells + 1.5) * offset), (cells + 1) * offset + 150));
+            Main.getGameWindow().setVisible(false);
+            Main.getGameWindow().setVisible(true);
+        }
+    }
+
     public void generateGame(int n,boolean o){
         cells=n;
         orientable=o;
+        setSizes();
         generateGame();
     }
     public void generateGame(TwiddleMove m){
@@ -297,11 +293,7 @@ public class Twiddle extends Game {
                 add(sq);
             }
 
-            buttons=new ArrayList<>();
-            for(int i=0;i<(cells-1)*(cells-1);i++){
-                Rectangle rect=new Rectangle((2+i%(cells-1))*offset-30,(2+i/(cells-1))*offset-30,60,60);
-                buttons.add(rect);
-            }
+            setButtons();
         }catch(IOException | ClassNotFoundException e){
             e.printStackTrace();
         }
@@ -325,4 +317,5 @@ public class Twiddle extends Game {
     public Class<?> getGameType(){
         return Twiddle.class;
     }
+
 }
