@@ -9,9 +9,12 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.jgrapht.alg.planar.BoyerMyrvoldPlanarityInspector;
+
+
 public class Untangle extends Game{
     static int nodes;
-    static Graph graph;
+    static MyGraph graph;
     static Point offset;
     static private final int radius = 10;
     MouseAction ma=new MouseAction();
@@ -80,11 +83,19 @@ public class Untangle extends Game{
     public void paintComponent(Graphics g) {
         Graphics2D gd=(Graphics2D) g.create();
         gd.setColor(Color.red);
+        //gd.setStroke(new BasicStroke(3f));
         for(int[] e: graph.edges){
             Circle v1=graph.vertices.get(e[0]);
             Circle v2=graph.vertices.get(e[1]);
             gd.drawLine(v1.getx(),v1.gety(),v2.getx(),v2.gety());
         }
+        /*
+        for(Circle v1: graph.vertices){
+            for(Circle v2:v1.getNeighbours()){
+                gd.drawLine(v1.getx(),v1.gety(),v2.getx(),v2.gety());
+            }
+        }
+         */
 
         for(Circle c: graph.vertices){
             gd.setColor(Color.black);
@@ -109,7 +120,7 @@ public class Untangle extends Game{
         int[] e4={1,2};
         ArrayList<int[]> e=new ArrayList<>();
         e.add(e1);e.add(e2);e.add(e3);e.add(e4);
-        graph=new Graph(v,e);
+        graph=new MyGraph(v,e);
     }
     public void generateGame(int n){
         nodes=n;
