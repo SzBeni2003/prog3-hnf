@@ -261,7 +261,6 @@ public class Twiddle extends Game {
     public void setSizes(){
         setMinimumSize(new Dimension((int) ((cells+1.5)*offset),(cells+1)*offset));
         if(Main.getGameWindow()!=null) {
-            Main.getGameWindow().setMinimumSize(new Dimension((int) ((cells + 1.5) * offset), (cells + 1) * offset + 150));
             Main.getGameWindow().setSize(new Dimension((int) ((cells + 1.5) * offset), (cells + 1) * offset + 150));
             Main.getGameWindow().setVisible(false);
             Main.getGameWindow().setVisible(true);

@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 public class MenuWindow extends JFrame {
     HashMap<JMenuItem, Twiddle.TwiddleMove> twiddleOptions;
+    HashMap<JMenuItem, Integer> untangleOptions;
 
     JButton untangle=new JButton("Play Untangle");
     JButton twiddle=new JButton("Play Twiddle");
@@ -36,6 +37,8 @@ public class MenuWindow extends JFrame {
             Main.menuWindow.setVisible(false);
             Main.gameWindow.openGame(Main.untangle);
             Main.gameWindow.top.setName("Untangle");
+            Main.gameWindow.top.setSizeOptions(untangleOptions);
+            Main.gameWindow.setSize(600,750);
             Main.gameWindow.setVisible(true);
         });
         twiddle.addActionListener(e->{
@@ -56,6 +59,14 @@ public class MenuWindow extends JFrame {
         twiddleOptions.put(new JMenuItem("5x5, orientable"),new Twiddle.TwiddleMove(5, true));
         twiddleOptions.put(new JMenuItem("6x6, normal"),new Twiddle.TwiddleMove(6,false));
         twiddleOptions.put(new JMenuItem("6x6, orientable"), new Twiddle.TwiddleMove(6, true));
+
+        untangleOptions=new HashMap<>();
+        untangleOptions.put(new JMenuItem("6 points"),6);
+        untangleOptions.put(new JMenuItem("8 points"),8);
+        untangleOptions.put(new JMenuItem("10 points"),10);
+        untangleOptions.put(new JMenuItem("15 points"),14);
+        untangleOptions.put(new JMenuItem("20 points"),20);
+        untangleOptions.put(new JMenuItem("25 points"),25);
 
     }
 

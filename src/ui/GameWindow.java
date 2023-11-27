@@ -12,8 +12,8 @@ public class GameWindow extends JFrame {
     BottomPanel bottom=new BottomPanel();
     public GameWindow(){
         super();
-        setSize(new Dimension(600,700));
-        setResizable(true);
+        setSize(new Dimension(600,750));
+        setResizable(false);
         setVisible(false);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter(){

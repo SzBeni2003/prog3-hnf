@@ -1,29 +1,55 @@
 package game.untangle;
 
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
+import org.jgrapht.Graph;
+import org.jgrapht.GraphType;
+import org.jgrapht.alg.planar.BoyerMyrvoldPlanarityInspector;
+import org.jgrapht.graph.AbstractBaseGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 
-public class MyGraph {
-    ArrayList<Circle> vertices;
-    ArrayList<int[]> edges;
-    public MyGraph(ArrayList<Circle> v,ArrayList<int[]> e){
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.Supplier;
+
+public class MyGraph implements Serializable{
+    List<Circle> vertices=new ArrayList<>();
+    Set<int[]> edges=new HashSet<>();
+    public MyGraph(List<Circle> v, Set<int[]> e){
         vertices=v;
         edges=e;
     }
 
-    public void addEdge(int j1, int j2){
-        if(j1==j2)return;
-        Circle i1=vertices.get(j1);Circle i2=vertices.get(j2);
-        i1.addNeighbor(i2);
-        i2.addNeighbor(i1);
+    public MyGraph(int n){
+        generateGraph(n);
     }
 
-    public boolean staysPlanar(int i1, int i2){
+    public void generateGraph(int n){
+        Graph<Circle, DefaultEdge> graph=new SimpleGraph<>(DefaultEdge.class);
+        vertices=new ArrayList<>(n);
+        for(int i=0;i<n;i++){
+            Circle v=new Circle((int) (300+230*Math.cos(2*i*Math.PI/n)), (int) (300+230*Math.sin(2*i*Math.PI/n)),Untangle.radius);
+            vertices.add(v);
+            graph.addVertex(v);
+        }
+        ArrayList<int[]> pairs=new ArrayList<>();
+        for(int i=0;i<n;i++){
+            for(int j=i+1;j<n;j++){
+                pairs.add(new int[]{i, j});
+            }
+        }
+        Collections.shuffle(pairs);
+        Graph<Circle,DefaultEdge> newGraph=graph;
+        for(int[] pair:pairs){
+            graph.addEdge(vertices.get(pair[0]),vertices.get(pair[1]));
+            if(new BoyerMyrvoldPlanarityInspector<>(newGraph).isPlanar()){
+                edges.add(pair);
+            }else{
+                graph.removeEdge(vertices.get(pair[0]),vertices.get(pair[1]));
+            }
+        }
+    }
 
-
+    public boolean intersects(int[] e1, int[] e2){
         return false;
     }
-
-    //private boolean check
 }

@@ -26,7 +26,7 @@ public class TopPanel extends JMenuBar {
             Main.menuWindow.setVisible(true);
         });
         add(back);
-        add(GameName);
+        add(GameName,CENTER_ALIGNMENT);
         add(options);
         add(settings);
         options.add(newGame);
@@ -54,8 +54,8 @@ public class TopPanel extends JMenuBar {
             option.addActionListener(e->{
                 if(Main.getGameWindow().getGameField().getGameType() == Twiddle.class){
                     Main.twiddle.generateGame((Twiddle.TwiddleMove) sizeOptions.get(option));
-                }else if(Main.getGameWindow().getGameField().getGameType()== Untangle.class){
-                    Main.untangle.generateGame();
+                }else if(Main.getGameWindow().getGameField().getGameType() == Untangle.class){
+                    Main.untangle.generateGame((int) sizeOptions.get(option));
                 }
             });
         }
