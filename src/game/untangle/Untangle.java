@@ -139,8 +139,6 @@ public class Untangle extends Game{
             nodeDragged=-1;
             from=null;
 
-            //TODO: win condition checking
-
             for(int[] e1: graph.edges){
                 for(int[] e2: graph.edges){
                     if(graph.intersects(e1,e2))return;
@@ -235,12 +233,20 @@ public class Untangle extends Game{
     @Override
     public void loadGame() {
         try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
+            nodes=(Integer) ois.readObject();
             graph=(MyGraph) ois.readObject();
             prevMoves=(LinkedList<UntangleMove>) ois.readObject();
             nextMoves=(LinkedList<UntangleMove>) ois.readObject();
         }catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+
+        if(!nextMoves.isEmpty())Main.getGameWindow().getBottom().setUndo(true);
+        else Main.getGameWindow().getBottom().setUndo(false);
+        if(!nextMoves.isEmpty())Main.getGameWindow().getBottom().setRedo(true);
+        else Main.getGameWindow().getBottom().setRedo(false);
+
         setVisible(false);
         setVisible(true);
     }
@@ -252,6 +258,7 @@ public class Untangle extends Game{
     @Override
     public void saveGame() {
         try(ObjectOutputStream ous=new ObjectOutputStream(new FileOutputStream(saveFile))){
+            ous.writeObject(nodes);
             ous.writeObject(graph);
             ous.writeObject(prevMoves);
             ous.writeObject(nextMoves);

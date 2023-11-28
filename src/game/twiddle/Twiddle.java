@@ -243,7 +243,6 @@ public class Twiddle extends Game {
 
             @Override
             public void done(){
-                //TODO: win condition checking
                 for(int i=0;i<squares.size();i++){
                     if(squares.get(i).getTag()!=i+1) {
                         animating = false;

@@ -17,4 +17,8 @@ public class Main {
     public static GameWindow getGameWindow() {
         return gameWindow;
     }
+
+    public static MenuWindow getMenuWindow() {
+        return menuWindow;
+    }
 }
