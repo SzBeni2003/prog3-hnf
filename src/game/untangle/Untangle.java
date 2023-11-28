@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.geom.Ellipse2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,19 +19,45 @@ import org.jgrapht.graph.DefaultEdge;
 import ui.Main;
 
 
+/**
+ * Represents a game of untangle where nodes need to be managed within the graphical interface.
+ */
 public class Untangle extends Game{
+
+    /** The file used for saving the game state. */
     private final File saveFile;
+
+    /** The total number of nodes in the graph. */
     static int nodes;
+
+    /** The graph representing connections between nodes. */
     static MyGraph graph;
+
+    /** The offset for node positions. */
     static Point offset;
+
+    /** The radius of the nodes. */
     static final int radius = 6;
+
+    /** Mouse action handling for the game. */
     MouseAction ma=new MouseAction();
+
+    /** The index of the node being dragged. */
     int nodeDragged;
+
+    /** The starting point of a node's movement. */
     Point from;
 
+    /** The list of previous moves made in the game. */
     LinkedList<UntangleMove> prevMoves=new LinkedList<>();
+
+    /** The list of next moves that can be redone in the game. */
     LinkedList<UntangleMove> nextMoves=new LinkedList<>();
 
+
+    /**
+     * Constructor for Untangle initializing the game's properties.
+     */
     public Untangle(){
         saveFile=new File("saves/untangle.ser");
 
@@ -42,6 +70,11 @@ public class Untangle extends Game{
         addMouseMotionListener(ma);
     }
 
+    /**
+     * Constructor for Untangle initializing the game with a specified number of nodes.
+     *
+     * @param n The number of nodes to generate for the game.
+     */
     public Untangle(int n){
         saveFile=new File("saves/untangle.ser");
         generateGame(n);
@@ -51,6 +84,9 @@ public class Untangle extends Game{
     }
 
 
+    /**
+     * Represents a move made in the Untangle game.
+     */
     public static class UntangleMove implements Serializable{
         int node;
         Point posFrom;
@@ -62,6 +98,10 @@ public class Untangle extends Game{
         }
     }
 
+
+    /**
+     * Handles mouse actions within the game interface.
+     */
     private class MouseAction extends MouseAdapter{
         @Override
         public void mousePressed(MouseEvent e) {
@@ -98,10 +138,23 @@ public class Untangle extends Game{
             Main.getGameWindow().getBottom().setUndo(true);
             nodeDragged=-1;
             from=null;
+
             //TODO: win condition checking
+
+            for(int[] e1: graph.edges){
+                for(int[] e2: graph.edges){
+                    if(graph.intersects(e1,e2))return;
+                }
+            }
+            gameEnded();
         }
     }
 
+    /**
+     * Updates the location of a node based on mouse movement.
+     *
+     * @param e The MouseEvent triggering the node update.
+     */
     public void updateLocation(MouseEvent e){
         Point p=new Point(offset.x+e.getX(), offset.y+e.getY());
         Circle c=graph.vertices.get(nodeDragged);
@@ -111,6 +164,11 @@ public class Untangle extends Game{
         repaint();
     }
 
+    /**
+     * Paints the game interface with nodes and edges.
+     *
+     * @param g The Graphics object used for painting.
+     */
     public void paint(Graphics g){
         Image dbImage = createImage(getWidth(), getHeight());
         Graphics dbg = dbImage.getGraphics();
@@ -118,6 +176,11 @@ public class Untangle extends Game{
         g.drawImage(dbImage, 0, 0, this);
     }
 
+    /**
+     * Paints the components of the game interface.
+     *
+     * @param g The Graphics object used for painting.
+     */
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D gd=(Graphics2D) g.create();
@@ -138,6 +201,10 @@ public class Untangle extends Game{
         }
     }
 
+
+    /**
+     * Generates a new game without specifying the number of nodes.
+     */
     public void generateGame() {
         prevMoves=new LinkedList<>();
         nextMoves=new LinkedList<>();
@@ -148,6 +215,12 @@ public class Untangle extends Game{
         setVisible(false);
         setVisible(true);
     }
+
+    /**
+     * Generates a new game with a specified number of nodes.
+     *
+     * @param n The number of nodes to generate for the game.
+     */
     public void generateGame(int n){
         nodes=n;
         generateGame();
@@ -155,6 +228,10 @@ public class Untangle extends Game{
         saveGame();
     }
 
+
+    /**
+     * Loads the game from the location specified by saveFile.
+     */
     @Override
     public void loadGame() {
         try(ObjectInputStream ois=new ObjectInputStream(new FileInputStream(saveFile))){
@@ -168,6 +245,10 @@ public class Untangle extends Game{
         setVisible(true);
     }
 
+
+    /**
+     * Saves the game to the location specified by saveFile.
+     */
     @Override
     public void saveGame() {
         try(ObjectOutputStream ous=new ObjectOutputStream(new FileOutputStream(saveFile))){
@@ -179,6 +260,9 @@ public class Untangle extends Game{
         }
     }
 
+    /**
+     * Reverts the last move the player made.
+     */
     @Override
     public void undo() {
         UntangleMove move=prevMoves.removeFirst();
@@ -192,6 +276,9 @@ public class Untangle extends Game{
         Main.getGameWindow().getBottom().setRedo(true);
     }
 
+    /**
+     * Redoes the last move the player reverted (if possible).
+     */
     @Override
     public void redo() {
         UntangleMove move=nextMoves.removeFirst();

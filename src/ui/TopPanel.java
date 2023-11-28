@@ -10,14 +10,35 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * Represents the top panel containing menu items and options in the game window.
+ */
 public class TopPanel extends JMenuBar {
+
+    /** The menu item to navigate back to the main menu. */
     JMenuItem back=new JMenuItem("Back");
+
+    /** The label displaying the name of the game. */
     JLabel GameName;
+
+    /** The menu for game options. */
     JMenu options=new JMenu("Options");
+
+    /** The menu item for starting a new game. */
     JMenuItem newGame=new JMenuItem("New Game");
+
+    /** The menu item for restarting the current game. */
     JMenuItem restart=new JMenuItem("Restart");
+
+    /** The menu for settings. */
     JMenu settings=new JMenu("Settings");
+
+    /** HashMap storing size options for the game. */
     HashMap<JMenuItem,?>  sizeOptions=new HashMap<>();
+
+    /**
+     * Constructs the TopPanel, initializing its components and actions.
+     */
     TopPanel(){
         super();
         GameName=new JLabel("Game");
@@ -39,9 +60,20 @@ public class TopPanel extends JMenuBar {
             Main.gameWindow.getGameField().loadGame();
         });
     }
+
+    /**
+     * Sets the name of the game displayed in the panel.
+     *
+     * @param string The name of the game.
+     */
     public void setName(String string){
         GameName.setText(string);
     }
+    /**
+     * Sets the size options available in the settings menu.
+     *
+     * @param options The size options for the game.
+     */
     public void setSizeOptions(HashMap<JMenuItem,?> options){
         for(JMenuItem option:sizeOptions.keySet()){
             settings.remove(option);

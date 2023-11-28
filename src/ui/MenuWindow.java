@@ -31,6 +31,7 @@ public class MenuWindow extends JFrame {
             public void windowClosing(WindowEvent e) {
                 Main.untangle.saveGame();
                 Main.twiddle.saveGame();
+                Main.gameWindow.dispose();
             }
         });
         untangle.addActionListener(e -> {

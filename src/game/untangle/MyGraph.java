@@ -7,6 +7,7 @@ import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
+import java.awt.geom.Line2D;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Supplier;
@@ -50,6 +51,11 @@ public class MyGraph implements Serializable{
     }
 
     public boolean intersects(int[] e1, int[] e2){
-        return false;
+        if(e1[0]==e2[0]||e1[0]==e2[1]||e1[1]==e2[0]||e1[1]==e2[1]) return false;
+        return Line2D.linesIntersect(
+                vertices.get(e1[0]).x,vertices.get(e1[0]).y,
+                vertices.get(e1[1]).x,vertices.get(e1[1]).y,
+                vertices.get(e2[0]).x,vertices.get(e2[0]).y,
+                vertices.get(e2[1]).x,vertices.get(e2[1]).y);
     }
 }

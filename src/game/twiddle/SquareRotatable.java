@@ -7,14 +7,36 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.PI;
 
+/**
+ * Represents a rotatable square component within the Twiddle game.
+ */
 public class SquareRotatable extends JComponent {
-    double x;
-    double y;
-    double r;
-    double theta;
-    int tag;
 
+    /** The x-coordinate of the square's center point. */
+    double x;
+    /** The y-coordinate of the square's center point. */
+    double y;
+    /** The radius of the square. */
+    double r;
+    /** The rotation angle of the square. */
+    double theta;
+    /** The tag identifying the square. */
+    int tag;
+    int orientation;
+
+    /**
+     * Constructs a SquareRotatable with a given tag, setting default x and y coordinates.
+     *
+     * @param tag The tag identifying the square.
+     */
     public SquareRotatable(int tag){this(100,100,tag);}
+    /**
+     * Constructs a SquareRotatable with specified x, y coordinates, and a tag.
+     *
+     * @param x   The x-coordinate of the square.
+     * @param y   The y-coordinate of the square.
+     * @param tag The tag identifying the square.
+     */
     public SquareRotatable(double x, double y, int tag){
         this.x=x;
         this.y=y;
@@ -22,22 +44,56 @@ public class SquareRotatable extends JComponent {
         this.tag=tag;
     }
 
+    /**
+     * Sets the position of the square based on a specific spot.
+     *
+     * @param spot The spot position for the square.
+     */
     public void setSpot(int spot) {
         setCenterPoint((1.25+spot%Twiddle.cells)*Twiddle.offset,(1+spot/Twiddle.cells)*Twiddle.offset);
     }
+    /**
+     * Sets the center point of the square to the given x and y coordinates.
+     *
+     * @param x The x-coordinate for the center point.
+     * @param y The y-coordinate for the center point.
+     */
     public void setCenterPoint(double x,double y){
         this.x=x;
         this.y=y;
     }
+    /**
+     * Sets the center point of the square to the given x and y coordinates.
+     *
+     * @param x The x-coordinate for the center point.
+     * @param y The y-coordinate for the center point.
+     */
     public void setCenterPoint(int x,int y){
         this.x= x;
         this.y= y;
     }
 
+    /**
+     * Sets the rotation angle of the square.
+     *
+     * @param theta The rotation angle in radians.
+     */
     public void setTheta(double theta) {
         this.theta = theta;
     }
 
+    public void setOrientation(int o){
+        orientation=o;
+        setTheta(o*PI/2);
+    }
+    public int getOrientation(){
+        return orientation%4;
+    }
+    /**
+     * Paints the square with its graphical representation.
+     *
+     * @param g The Graphics object used for painting.
+     */
     @Override
     public void paintComponent(Graphics g){
         Graphics2D gd=(Graphics2D) g.create();
@@ -82,8 +138,16 @@ public class SquareRotatable extends JComponent {
         else gd.drawString(t,(int) x-10,(int) y+10);
     }
 
+    /**
+     * Retrieves the tag identifying the square.
+     *
+     * @return The tag identifying the square.
+     */
     public int getTag() {
         return tag;
     }
 
+    public double getTheta() {
+        return theta-2*PI*(theta/2*PI);
+    }
 }

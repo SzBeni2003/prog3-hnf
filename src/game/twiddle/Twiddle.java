@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.lang.Math;
 import java.util.*;
@@ -15,20 +16,44 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Represents a Twiddle game that involves rotating squares within a graphical interface.
+ */
 public class Twiddle extends Game {
+
+    /** The file used for saving the game state. */
     private final File saveFile;
+
+    /** The total number of cells in a row. */
     public static int cells;
+
+    /** Half the size of each square in pixels. */
     final static int size=47;
+
+    /** The offset used for positioning elements. */
     final static int offset=100;
+
+    /** Indicates if an animation is currently in progress. */
     static boolean animating=false;
+
+    /** Indicates whether squares have to by oriented in the right direction. */
     static boolean orientable;
+
+    /** List of squares in the game. */
     List<SquareRotatable> squares=new ArrayList<>();
+
+    /** List of buttons used for interaction. */
     List<Rectangle> buttons=new ArrayList<>();
 
+    /** List of previous moves made in the game. */
     LinkedList<TwiddleMove> prevMoves=new LinkedList<>();
+    /** List of next moves that can be redone in the game. */
     LinkedList<TwiddleMove> nextMoves=new LinkedList<>();
 
 
+    /**
+     * Constructor for Twiddle initializing the game properties and interface.
+     */
     public Twiddle(){
         saveFile=new File("saves/twiddle.ser");
 
@@ -55,6 +80,12 @@ public class Twiddle extends Game {
         });
         setVisible(true);
     }
+    /**
+     * Constructor for Twiddle initializing the game with a specified number of cells and orientation.
+     *
+     * @param n The number of cells in the game.
+     * @param o Indicates if squares have to be oriented in the right direction.
+     */
     public Twiddle(int n, boolean o){
         saveFile=new File("saves/twiddle.ser");
         setSizes();
@@ -83,6 +114,9 @@ public class Twiddle extends Game {
         setVisible(true);
     }
 
+    /**
+     * Represents a move made in the Twiddle game.
+     */
     public static class TwiddleMove implements Serializable{
         int pos;
         boolean ccw;
@@ -99,6 +133,9 @@ public class Twiddle extends Game {
     }
 
 
+    /**
+     * Reverts the last move the player made.
+     */
     @Override
     public void undo(){
         if(!animating&&!prevMoves.isEmpty()){
@@ -111,7 +148,9 @@ public class Twiddle extends Game {
             Main.getGameWindow().getBottom().setRedo(true);
         }
     }
-
+    /**
+     * Redoes the last move the player reverted (if possible).
+     */
     @Override
     public void redo() {
         if(!animating&&!nextMoves.isEmpty()){
@@ -125,6 +164,10 @@ public class Twiddle extends Game {
         }
     }
 
+    /**
+     * Does the animation for the move the player made.
+     * @param m the move the player made.
+     */
     public void rotate(TwiddleMove m) {
 
         int row=m.pos/(cells-1);
@@ -176,11 +219,19 @@ public class Twiddle extends Game {
                     squares.remove(se);
                     squares.add(cells*row+col+1,se);
                     squares.add(cells*(row+1)+col,nw);
+                    nw.setOrientation(nw.getOrientation()-1);
+                    ne.setOrientation(ne.getOrientation()-1);
+                    sw.setOrientation(sw.getOrientation()-1);
+                    se.setOrientation(se.getOrientation()-1);
                 }else{
                     squares.remove(ne);
                     squares.remove(sw);
                     squares.add(cells*row+col,sw);
                     squares.add(cells*(1+row)+col+1,ne);
+                    nw.setOrientation(nw.getOrientation()+1);
+                    ne.setOrientation(ne.getOrientation()+1);
+                    sw.setOrientation(sw.getOrientation()+1);
+                    se.setOrientation(se.getOrientation()+1);
                 }
                 return 0;
             }
@@ -193,17 +244,27 @@ public class Twiddle extends Game {
             @Override
             public void done(){
                 //TODO: win condition checking
+                for(int i=0;i<squares.size();i++){
+                    if(squares.get(i).getTag()!=i+1) {
+                        animating = false;
+                        return;
+                    }
+                    if(orientable&&squares.get(i).getOrientation()!=0){
+                        animating=false;
+                        return;
+                    }
+                }
 
+                gameEnded();
                 animating=false;
             }
         };
         rotater.execute();
     }
 
-    public void finishGame(){
-
-    }
-
+    /**
+     * Generates a new game without specifying the size of field nor the need for orientation.
+     */
     @Override
     public void generateGame() {
         for(SquareRotatable sq:squares){
@@ -228,11 +289,11 @@ public class Twiddle extends Game {
             int rot;
             if (i + 1 < cells * cells) {
                 rot = (2 * r.nextInt(2) + irow - grow + icol - gcol) % 4;
-                squares.get(i).setTheta(rot * Math.PI / 2);
+                squares.get(i).setOrientation(rot);
                 rotsum += rot;
             } else {
                 rot = -(rotsum % 4);
-                squares.get(i).setTheta(rot * Math.PI / 2);
+                squares.get(i).setOrientation(rot);
                 rotsum += rot;
             }
 
@@ -251,6 +312,9 @@ public class Twiddle extends Game {
         setVisible(true);
     }
 
+    /**
+     * Sets the buttons where they should be.
+     */
     private void setButtons() {
         buttons=new ArrayList<>();
         for(int i=0;i<(cells-1)*(cells-1);i++){
@@ -258,6 +322,10 @@ public class Twiddle extends Game {
             buttons.add(rect);
         }
     }
+
+    /**
+     * Sets the window's size.
+     */
     public void setSizes(){
         setMinimumSize(new Dimension((int) ((cells+1.5)*offset),(cells+1)*offset));
         if(Main.getGameWindow()!=null) {
@@ -267,6 +335,11 @@ public class Twiddle extends Game {
         }
     }
 
+    /**
+     * Generates a game of Twiddle.
+     * @param n The size of the playing field (nxn).
+     * @param o The need for orientating the squares in the right direction.
+     */
     public void generateGame(int n,boolean o){
         cells=n;
         orientable=o;
@@ -276,6 +349,10 @@ public class Twiddle extends Game {
     public void generateGame(TwiddleMove m){
         generateGame(m.pos,m.ccw);
     }
+
+    /**
+     * Loads the game from the location specified by saveFile.
+     */
     @Override
     public void loadGame(){
         for(SquareRotatable sq:squares){
@@ -299,6 +376,9 @@ public class Twiddle extends Game {
         setVisible(false);
         setVisible(true);
     }
+    /**
+     * Saves the game to the location specified by saveFile.
+     */
     @Override
     public void saveGame(){
         try(ObjectOutputStream ous=new ObjectOutputStream(new FileOutputStream(saveFile))){
