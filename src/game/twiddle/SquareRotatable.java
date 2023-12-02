@@ -2,6 +2,7 @@ package game.twiddle;
 
 import javax.swing.*;
 import java.awt.*;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
@@ -12,15 +13,25 @@ import static java.lang.Math.PI;
  */
 public class SquareRotatable extends JComponent {
 
-    /** The x-coordinate of the square's center point. */
+    /**
+     * The x-coordinate of the square's center point.
+     */
     double x;
-    /** The y-coordinate of the square's center point. */
+    /**
+     * The y-coordinate of the square's center point.
+     */
     double y;
-    /** The radius of the square. */
+    /**
+     * The radius of the square.
+     */
     double r;
-    /** The rotation angle of the square. */
+    /**
+     * The rotation angle of the square.
+     */
     double theta;
-    /** The tag identifying the square. */
+    /**
+     * The tag identifying the square.
+     */
     int tag;
     int orientation;
 
@@ -29,7 +40,10 @@ public class SquareRotatable extends JComponent {
      *
      * @param tag The tag identifying the square.
      */
-    public SquareRotatable(int tag){this(100,100,tag);}
+    public SquareRotatable(int tag) {
+        this(100, 100, tag);
+    }
+
     /**
      * Constructs a SquareRotatable with specified x, y coordinates, and a tag.
      *
@@ -37,11 +51,11 @@ public class SquareRotatable extends JComponent {
      * @param y   The y-coordinate of the square.
      * @param tag The tag identifying the square.
      */
-    public SquareRotatable(double x, double y, int tag){
-        this.x=x;
-        this.y=y;
-        this.r=Twiddle.size;
-        this.tag=tag;
+    public SquareRotatable(double x, double y, int tag) {
+        this.x = x;
+        this.y = y;
+        this.r = Twiddle.size;
+        this.tag = tag;
     }
 
     /**
@@ -50,28 +64,20 @@ public class SquareRotatable extends JComponent {
      * @param spot The spot position for the square.
      */
     public void setSpot(int spot) {
-        setCenterPoint((1.25+spot%Twiddle.cells)*Twiddle.offset,(1+spot/Twiddle.cells)*Twiddle.offset);
+        setCenterPoint((1.25 + spot % Twiddle.cells) * Twiddle.offset, (1 + spot / Twiddle.cells) * Twiddle.offset);
     }
+
     /**
      * Sets the center point of the square to the given x and y coordinates.
      *
      * @param x The x-coordinate for the center point.
      * @param y The y-coordinate for the center point.
      */
-    public void setCenterPoint(double x,double y){
-        this.x=x;
-        this.y=y;
+    public void setCenterPoint(double x, double y) {
+        this.x = x;
+        this.y = y;
     }
-    /**
-     * Sets the center point of the square to the given x and y coordinates.
-     *
-     * @param x The x-coordinate for the center point.
-     * @param y The y-coordinate for the center point.
-     */
-    public void setCenterPoint(int x,int y){
-        this.x= x;
-        this.y= y;
-    }
+
 
     /**
      * Sets the rotation angle of the square.
@@ -82,39 +88,41 @@ public class SquareRotatable extends JComponent {
         this.theta = theta;
     }
 
-    public void setOrientation(int o){
-        orientation=o;
-        setTheta(o*PI/2);
+    public void setOrientation(int o) {
+        orientation = o;
+        setTheta(o * PI / 2);
     }
-    public int getOrientation(){
-        return orientation%4;
+
+    public int getOrientation() {
+        return orientation % 4;
     }
+
     /**
      * Paints the square with its graphical representation.
      *
      * @param g The Graphics object used for painting.
      */
     @Override
-    public void paintComponent(Graphics g){
-        Graphics2D gd=(Graphics2D) g.create();
+    public void paintComponent(Graphics g) {
+        Graphics2D gd = (Graphics2D) g.create();
 
-        double q=sqrt(2)*r;
-        int[] sxpoints={
-                (int) (x+q*cos(theta+PI/4)),
-                (int) (x+q*cos(theta+3*PI/4)),
-                (int) (x+q*cos(theta+5*PI/4)),
-                (int) (x+q*cos(theta+7*PI/4))
+        double q = sqrt(2) * r;
+        int[] sxpoints = {
+                (int) (x + q * cos(theta + PI / 4)),
+                (int) (x + q * cos(theta + 3 * PI / 4)),
+                (int) (x + q * cos(theta + 5 * PI / 4)),
+                (int) (x + q * cos(theta + 7 * PI / 4))
         };
-        int[] sypoints={
-                (int) (y+q*sin(theta+1*PI/4)),
-                (int) (y+q*sin(theta+3*PI/4)),
-                (int) (y+q*sin(theta+5*PI/4)),
-                (int) (y+q*sin(theta+7*PI/4))
+        int[] sypoints = {
+                (int) (y + q * sin(theta + 1 * PI / 4)),
+                (int) (y + q * sin(theta + 3 * PI / 4)),
+                (int) (y + q * sin(theta + 5 * PI / 4)),
+                (int) (y + q * sin(theta + 7 * PI / 4))
         };
         gd.setColor(Color.GRAY);
-        gd.fill(new Polygon(sxpoints,sypoints,4));
+        gd.fill(new Polygon(sxpoints, sypoints, 4));
 
-        if(Twiddle.orientable) {
+        if (Twiddle.orientable) {
             int[] txpoints = {
                     (int) (x - 0.8 * r * cos(theta - PI / 6)),
                     (int) (x - 0.8 * r * cos(theta + 0.5 * PI)),
@@ -130,12 +138,12 @@ public class SquareRotatable extends JComponent {
             gd.fill(new Polygon(txpoints, typoints, 3));
         }
 
-        String t=String.valueOf(tag);
+        String t = String.valueOf(tag);
         gd.setColor(Color.BLACK);
         gd.setFont(g.getFont().deriveFont(20f));
-        if(tag<=9)
-            gd.drawString(t, (int) x-5, (int) y+10);
-        else gd.drawString(t,(int) x-10,(int) y+10);
+        if (tag <= 9)
+            gd.drawString(t, (int) x - 5, (int) y + 10);
+        else gd.drawString(t, (int) x - 10, (int) y + 10);
     }
 
     /**
@@ -145,9 +153,5 @@ public class SquareRotatable extends JComponent {
      */
     public int getTag() {
         return tag;
-    }
-
-    public double getTheta() {
-        return theta-2*PI*(theta/2*PI);
     }
 }

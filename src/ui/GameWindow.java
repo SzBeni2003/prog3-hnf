@@ -11,35 +11,42 @@ import java.awt.event.*;
  */
 public class GameWindow extends JFrame {
 
-    /** The top panel in the game window. */
-    TopPanel top=new TopPanel();
+    /**
+     * The top panel in the game window.
+     */
+    TopPanel top = new TopPanel();
 
-    /** The game field panel. */
+    /**
+     * The game field panel.
+     */
     Game gameField;
 
-    /** The bottom panel in the game window. */
-    BottomPanel bottom=new BottomPanel();
+    /**
+     * The bottom panel in the game window.
+     */
+    BottomPanel bottom = new BottomPanel();
 
     /**
      * Constructs a GameWindow initializing its components and layout.
      */
-    public GameWindow(){
+    public GameWindow() {
         super();
-        setSize(new Dimension(600,750));
-        setResizable(false);
+        setSize(new Dimension(600, 750));
+        setMinimumSize(new Dimension(600, 750));
+        setResizable(true);
         setVisible(false);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter(){
+        addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 Main.gameWindow.setVisible(false);
                 Main.menuWindow.setVisible(true);
             }
         });
-        gameField=Main.untangle;
+        gameField = Main.untangle;
 
         add(top, BorderLayout.NORTH);
-        add(gameField,BorderLayout.CENTER);
-        add(bottom,BorderLayout.SOUTH);
+        add(gameField, BorderLayout.CENTER);
+        add(bottom, BorderLayout.SOUTH);
     }
 
     /**
@@ -47,10 +54,10 @@ public class GameWindow extends JFrame {
      *
      * @param game The new game to be displayed.
      */
-    public void openGame(Game game){
+    public void openGame(Game game) {
         remove(gameField);
-        gameField=game;
-        add(gameField,BorderLayout.CENTER);
+        gameField = game;
+        add(gameField, BorderLayout.CENTER);
     }
 
     /**
