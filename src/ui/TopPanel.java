@@ -60,7 +60,7 @@ public class TopPanel extends JMenuBar {
             Main.menuWindow.setVisible(true);
         });
         add(back);
-        add(GameName, CENTER_ALIGNMENT);
+        add(GameName);
         add(options);
         add(settings);
         options.add(newGame);

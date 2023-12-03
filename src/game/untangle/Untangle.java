@@ -4,11 +4,10 @@ import game.Game;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,6 +15,8 @@ import java.util.Set;
 
 import org.jgrapht.alg.planar.BoyerMyrvoldPlanarityInspector;
 import org.jgrapht.graph.DefaultEdge;
+
+
 import ui.Main;
 
 
@@ -28,6 +29,17 @@ public class Untangle extends Game {
      * The file used for saving the game state.
      */
     private final File saveFile;
+
+
+    long clockTime=0;
+    long startTime = -1;
+    Timer timer = new Timer(1000, e -> {
+        if (startTime < 0) startTime = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        clockTime = now - startTime;
+        repaint();
+    });
+
 
     /**
      * The total number of nodes in the graph.
@@ -132,6 +144,10 @@ public class Untangle extends Game {
                     nodeDragged = i;
                     from = new Point(node.x, node.y);
                     offset = new Point(node.x - e.getX(), node.y - e.getY());
+                    if(!timer.isRunning()){
+                        if(prevMoves.isEmpty()&&nextMoves.isEmpty()) startTime=-1;
+                        timer.start();
+                    }
                     return;
                 }
             }
@@ -164,6 +180,7 @@ public class Untangle extends Game {
                     if (graph.intersects(e1, e2)) return;
                 }
             }
+            timer.stop();
             gameEnded();
         }
     }
@@ -202,6 +219,10 @@ public class Untangle extends Game {
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D gd = (Graphics2D) g.create();
+        gd.setColor(Color.BLACK);
+        gd.setFont(g.getFont().deriveFont(30f));
+        SimpleDateFormat df = new SimpleDateFormat("mm:ss");
+        gd.drawString(df.format(clockTime),40,40);
         gd.setColor(Color.red);
         //gd.setStroke(new BasicStroke(3f));
         for (int[] e : graph.edges) {
@@ -309,6 +330,20 @@ public class Untangle extends Game {
         prevMoves.add(move);
         if (nextMoves.isEmpty()) Main.getGameWindow().getBottom().setRedo(false);
         Main.getGameWindow().getBottom().setUndo(true);
+    }
+
+    public void setSizes() {
+        setMinimumSize(new Dimension(600,750));
+        if (Main.getGameWindow() != null) {
+            Main.getGameWindow().setSize(600,750);
+            Main.getGameWindow().setVisible(false);
+            Main.getGameWindow().setVisible(true);
+            Main.getGameWindow().setResizable(true);
+            Main.getGameWindow().getBottom().setUndo(false);
+            Main.getGameWindow().getBottom().setRedo(false);
+            if(!prevMoves.isEmpty())Main.getGameWindow().getBottom().setUndo(true);
+            if(!nextMoves.isEmpty())Main.getGameWindow().getBottom().setRedo(true);
+        }
     }
 
     @Override

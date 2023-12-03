@@ -3,6 +3,7 @@ package ui;
 import game.twiddle.Twiddle;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class MenuWindow extends JFrame {
             Main.gameWindow.openGame(Main.untangle);
             Main.gameWindow.top.setName("Untangle");
             Main.gameWindow.top.setSizeOptions(untangleOptions);
-            Main.gameWindow.setSize(600, 750);
+            Main.untangle.setSizes();
             Main.gameWindow.setVisible(true);
         });
         twiddle.addActionListener(e -> {

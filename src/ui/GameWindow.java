@@ -31,9 +31,9 @@ public class GameWindow extends JFrame {
      */
     public GameWindow() {
         super();
-        setSize(new Dimension(600, 750));
-        setMinimumSize(new Dimension(600, 750));
-        setResizable(true);
+        //setSize(new Dimension(600, 750));
+        //setMinimumSize(new Dimension(600, 750));
+        //setResizable(true);
         setVisible(false);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {

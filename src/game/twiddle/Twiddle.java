@@ -74,8 +74,9 @@ public class Twiddle extends Game {
     public Twiddle() {
         saveFile = new File("saves/twiddle.ser");
 
-        loadGame();
-        setSizes();
+        //loadGame();
+        generateGame(4,true); //before new patches buildrun with this line
+        //setSizes();
         setLayout(new OverlayLayout(this));
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -106,7 +107,7 @@ public class Twiddle extends Game {
      */
     public Twiddle(int n, boolean o) {
         saveFile = new File("saves/twiddle.ser");
-        setSizes();
+        //setSizes();
         setLayout(new OverlayLayout(this));
 
         generateGame(n, o);
@@ -323,8 +324,8 @@ public class Twiddle extends Game {
         prevMoves = new LinkedList<>();
         nextMoves = new LinkedList<>();
 
-        Main.getGameWindow().getBottom().setRedo(false);
-        Main.getGameWindow().getBottom().setUndo(false);
+        //Main.getGameWindow().getBottom().setRedo(false);
+        //Main.getGameWindow().getBottom().setUndo(false);
 
         saveGame();
 
@@ -352,6 +353,11 @@ public class Twiddle extends Game {
             Main.getGameWindow().setSize(new Dimension((int) ((cells + 1.5) * offset), (cells + 1) * offset + 150));
             Main.getGameWindow().setVisible(false);
             Main.getGameWindow().setVisible(true);
+            Main.getGameWindow().setResizable(false);
+            Main.getGameWindow().getBottom().setUndo(false);
+            Main.getGameWindow().getBottom().setRedo(false);
+            if(!prevMoves.isEmpty())Main.getGameWindow().getBottom().setUndo(true);
+            if(!nextMoves.isEmpty())Main.getGameWindow().getBottom().setRedo(true);
         }
     }
 
