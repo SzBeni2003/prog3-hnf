@@ -49,4 +49,6 @@ public abstract class Game extends JPanel implements Serializable {
     }
 
     public abstract Class<?> getGameType();
+
+    public abstract void restart();
 }

@@ -67,7 +67,7 @@ public class TopPanel extends JMenuBar {
         options.add(restart);
 
         newGame.addActionListener(e -> Main.gameWindow.getGameField().generateGame());
-        restart.addActionListener(e -> Main.gameWindow.getGameField().loadGame());
+        restart.addActionListener(e -> Main.gameWindow.getGameField().restart());
     }
 
     /**

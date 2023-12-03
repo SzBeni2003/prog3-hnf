@@ -1,13 +1,16 @@
 package game.twiddle;
 
 import game.Game;
+import game.untangle.Untangle;
 import ui.Main;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 
@@ -22,6 +25,25 @@ public class Twiddle extends Game {
      * The file used for saving the game state.
      */
     private final File saveFile;
+
+    long clockTime=0;
+    long gameTime=0;
+    long startTime = -1;
+    boolean playing=true;
+    Timer timer = new Timer(1000, e -> {
+        if(Main.getGameWindow().isFocused()&&Main.getGameWindow().getGameField().getGameType()== Twiddle.class){
+            playing=true;
+            if (startTime < 0) startTime = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
+            clockTime = now - startTime;
+            repaint();
+        }else if(playing){
+            gameTime=clockTime+gameTime;
+            startTime=-1;
+            playing=false;
+        }
+    });
+
 
     /**
      * The total number of cells in a row.
@@ -73,11 +95,10 @@ public class Twiddle extends Game {
      */
     public Twiddle() {
         saveFile = new File("saves/twiddle.ser");
-
-        //loadGame();
-        generateGame(4,true); //before new patches buildrun with this line
-        //setSizes();
         setLayout(new OverlayLayout(this));
+        loadGame();
+        //generateGame(4, true); //before new patches buildrun with this line
+        //setSizes();
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (!animating) {
@@ -86,6 +107,10 @@ public class Twiddle extends Game {
                     for (int i = 0; i < buttons.size(); i++) {
                         if (buttons.get(i).contains(e.getPoint())) {
                             TwiddleMove move = new TwiddleMove(i, ccw);
+                            if(!timer.isRunning()){
+                                if(prevMoves.isEmpty()&&nextMoves.isEmpty()) startTime=-1;
+                                timer.start();
+                            }
                             rotate(move);
                             prevMoves.addFirst(move);
                             nextMoves = new LinkedList<>();
@@ -154,6 +179,12 @@ public class Twiddle extends Game {
         }
     }
 
+    @Override
+    public void restart(){
+        while(!prevMoves.isEmpty()){
+            undo();
+        }
+    }
 
     /**
      * Reverts the last move the player made.
@@ -277,7 +308,7 @@ public class Twiddle extends Game {
                         return;
                     }
                 }
-
+                timer.stop();
                 gameEnded();
                 animating = false;
             }
@@ -290,6 +321,7 @@ public class Twiddle extends Game {
      */
     @Override
     public void generateGame() {
+        timer.stop();
         for (SquareRotatable sq : squares) {
             remove(sq);
         }
@@ -327,8 +359,12 @@ public class Twiddle extends Game {
         //Main.getGameWindow().getBottom().setRedo(false);
         //Main.getGameWindow().getBottom().setUndo(false);
 
-        saveGame();
-
+        //saveGame();
+        setSizes();
+        gameTime=0;
+        clockTime=0;
+        startTime=-1;
+        repaint();
         setVisible(false);
         setVisible(true);
     }
@@ -356,8 +392,8 @@ public class Twiddle extends Game {
             Main.getGameWindow().setResizable(false);
             Main.getGameWindow().getBottom().setUndo(false);
             Main.getGameWindow().getBottom().setRedo(false);
-            if(!prevMoves.isEmpty())Main.getGameWindow().getBottom().setUndo(true);
-            if(!nextMoves.isEmpty())Main.getGameWindow().getBottom().setRedo(true);
+            if (!prevMoves.isEmpty()) Main.getGameWindow().getBottom().setUndo(true);
+            if (!nextMoves.isEmpty()) Main.getGameWindow().getBottom().setRedo(true);
         }
     }
 
@@ -392,7 +428,7 @@ public class Twiddle extends Game {
             squares = (ArrayList<SquareRotatable>) ois.readObject();
             prevMoves = (LinkedList<TwiddleMove>) ois.readObject();
             nextMoves = (LinkedList<TwiddleMove>) ois.readObject();
-
+            gameTime=(Long) ois.readObject();
             for (SquareRotatable sq : squares) {
                 add(sq);
             }
@@ -416,9 +452,28 @@ public class Twiddle extends Game {
             ous.writeObject(squares);
             ous.writeObject(prevMoves);
             ous.writeObject(nextMoves);
+            ous.writeObject(clockTime+gameTime);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void paint(Graphics g){
+        Image dbImage = createImage(getWidth(), getHeight());
+        Graphics dbg = dbImage.getGraphics();
+        paintComponent(dbg);
+        paintChildren(dbg);
+        g.drawImage(dbImage, 0, 0, this);
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        Graphics2D gd=(Graphics2D) g.create();
+        gd.setColor(Color.BLACK);
+        gd.setFont(g.getFont().deriveFont(30f));
+        SimpleDateFormat df = new SimpleDateFormat("mm:ss");
+        gd.drawString(df.format(clockTime+gameTime),40,40);
     }
 
     @Override
