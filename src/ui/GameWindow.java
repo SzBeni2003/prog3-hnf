@@ -14,7 +14,7 @@ public class GameWindow extends JFrame {
     /**
      * The top panel in the game window.
      */
-    TopPanel top = new TopPanel();
+    final TopPanel top = new TopPanel();
 
     /**
      * The game field panel.
@@ -24,16 +24,13 @@ public class GameWindow extends JFrame {
     /**
      * The bottom panel in the game window.
      */
-    BottomPanel bottom = new BottomPanel();
+    final BottomPanel bottom = new BottomPanel();
 
     /**
      * Constructs a GameWindow initializing its components and layout.
      */
     public GameWindow() {
         super();
-        //setSize(new Dimension(600, 750));
-        //setMinimumSize(new Dimension(600, 750));
-        //setResizable(true);
         setVisible(false);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {

@@ -6,8 +6,8 @@ import javax.swing.*;
  * The bottom panel of the GameField, consists of an undo and a redo button.
  */
 public class BottomPanel extends JPanel {
-    JButton undo = new JButton("Undo");
-    JButton redo = new JButton("Redo");
+    final JButton undo = new JButton("Undo");
+    final JButton redo = new JButton("Redo");
 
     BottomPanel() {
         add(undo);

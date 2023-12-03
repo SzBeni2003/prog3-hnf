@@ -24,7 +24,7 @@ public class SquareRotatable extends JComponent {
     /**
      * The radius of the square.
      */
-    double r;
+    final double r;
     /**
      * The rotation angle of the square.
      */
@@ -32,7 +32,7 @@ public class SquareRotatable extends JComponent {
     /**
      * The tag identifying the square.
      */
-    int tag;
+    final int tag;
     int orientation;
 
     /**

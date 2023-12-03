@@ -4,12 +4,12 @@ import game.untangle.*;
 import game.twiddle.*;
 
 public class Main {
-    static MenuWindow menuWindow = new MenuWindow();
+    static final MenuWindow menuWindow = new MenuWindow();
 
-    static Twiddle twiddle = new Twiddle();
-    static Untangle untangle = new Untangle();
+    static final Twiddle twiddle = new Twiddle();
+    static final Untangle untangle = new Untangle();
 
-    static GameWindow gameWindow = new GameWindow();
+    static final GameWindow gameWindow = new GameWindow();
 
     public static void main(String[] args) {
         menuWindow.show();

@@ -3,7 +3,6 @@ package ui;
 import game.twiddle.Twiddle;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
@@ -12,9 +11,9 @@ public class MenuWindow extends JFrame {
     HashMap<JMenuItem, Twiddle.TwiddleMove> twiddleOptions;
     HashMap<JMenuItem, Integer> untangleOptions;
 
-    JButton untangle = new JButton("Play Untangle");
-    JButton twiddle = new JButton("Play Twiddle");
-    JButton exit = new JButton("Exit game");
+    final JButton untangle = new JButton("Play Untangle");
+    final JButton twiddle = new JButton("Play Twiddle");
+    final JButton exit = new JButton("Exit game");
 
     public MenuWindow() {
         super("Menu");

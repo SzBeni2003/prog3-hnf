@@ -1,23 +1,15 @@
 package game.untangle;
 
 import game.Game;
+import ui.Main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.Ellipse2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
-
-import org.jgrapht.alg.planar.BoyerMyrvoldPlanarityInspector;
-import org.jgrapht.graph.DefaultEdge;
-
-
-import ui.Main;
 
 
 /**
@@ -32,12 +24,21 @@ public class Untangle extends Game {
 
 
     long clockTime=0;
+    long gameTime=0;
     long startTime = -1;
-    Timer timer = new Timer(1000, e -> {
-        if (startTime < 0) startTime = System.currentTimeMillis();
-        long now = System.currentTimeMillis();
-        clockTime = now - startTime;
-        repaint();
+    boolean playing=true;
+    final Timer timer = new Timer(1000, e -> {
+        if(Main.getGameWindow().isFocused() &&Main.getGameWindow().getGameField().getGameType()==Untangle.class){
+            playing=true;
+            if (startTime < 0) startTime = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
+            clockTime = now - startTime;
+            repaint();
+        }else if(playing){
+            gameTime=clockTime+gameTime;
+            startTime=-1;
+            playing=false;
+        }
     });
 
 
@@ -64,7 +65,7 @@ public class Untangle extends Game {
     /**
      * Mouse action handling for the game.
      */
-    MouseAction ma = new MouseAction();
+    final MouseAction ma = new MouseAction();
 
     /**
      * The index of the node being dragged.
@@ -120,9 +121,9 @@ public class Untangle extends Game {
      * Represents a move made in the Untangle game.
      */
     public static class UntangleMove implements Serializable {
-        int node;
-        Point posFrom;
-        Point posTo;
+        final int node;
+        final Point posFrom;
+        final Point posTo;
 
         public UntangleMove(int n, Point from, Point to) {
             node = n;
@@ -155,9 +156,7 @@ public class Untangle extends Game {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            //if(graph.vertices.get(nodeDragged).contains(e.getPoint())){
             if (nodeDragged != -1) {
-                //biztos hogy körökkel szeretnénk játszani, és nem négyzetekkel??
                 for (int i = 0; i < graph.vertices.size(); i++) {
                     if (i != nodeDragged && graph.vertices.get(i).contains2(e.getPoint())) return;
                 }
@@ -167,21 +166,22 @@ public class Untangle extends Game {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            offset = null;
-            Circle c = graph.vertices.get(nodeDragged);
-            Point to = new Point(c.x, c.y);
-            prevMoves.addFirst(new UntangleMove(nodeDragged, from, to));
-            Main.getGameWindow().getBottom().setUndo(true);
-            nodeDragged = -1;
-            from = null;
-
-            for (int[] e1 : graph.edges) {
-                for (int[] e2 : graph.edges) {
-                    if (graph.intersects(e1, e2)) return;
+            if(nodeDragged != -1){
+                offset = null;
+                Circle c = graph.vertices.get(nodeDragged);
+                Point to = new Point(c.x, c.y);
+                prevMoves.addFirst(new UntangleMove(nodeDragged, from, to));
+                Main.getGameWindow().getBottom().setUndo(true);
+                nodeDragged = -1;
+                from = null;
+                for (int[] e1 : graph.edges) {
+                    for (int[] e2 : graph.edges) {
+                        if (graph.intersects(e1, e2)) return;
+                    }
                 }
+                timer.stop();
+                gameEnded();
             }
-            timer.stop();
-            gameEnded();
         }
     }
 
@@ -222,7 +222,7 @@ public class Untangle extends Game {
         gd.setColor(Color.BLACK);
         gd.setFont(g.getFont().deriveFont(30f));
         SimpleDateFormat df = new SimpleDateFormat("mm:ss");
-        gd.drawString(df.format(clockTime),40,40);
+        gd.drawString(df.format(clockTime+gameTime),40,40);
         gd.setColor(Color.red);
         //gd.setStroke(new BasicStroke(3f));
         for (int[] e : graph.edges) {
@@ -245,12 +245,17 @@ public class Untangle extends Game {
      * Generates a new game without specifying the number of nodes.
      */
     public void generateGame() {
+        timer.stop();
         prevMoves = new LinkedList<>();
         nextMoves = new LinkedList<>();
         graph = new MyGraph(nodes);
 
-        saveGame();
-
+        //saveGame();
+        setSizes();
+        gameTime=0;
+        clockTime=0;
+        startTime=-1;
+        repaint();
         setVisible(false);
         setVisible(true);
     }
@@ -278,6 +283,7 @@ public class Untangle extends Game {
             graph = (MyGraph) ois.readObject();
             prevMoves = (LinkedList<UntangleMove>) ois.readObject();
             nextMoves = (LinkedList<UntangleMove>) ois.readObject();
+            gameTime=(Long) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -297,8 +303,16 @@ public class Untangle extends Game {
             ous.writeObject(graph);
             ous.writeObject(prevMoves);
             ous.writeObject(nextMoves);
+            ous.writeObject(clockTime+gameTime);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void restart(){
+        while(!prevMoves.isEmpty()){
+            undo();
         }
     }
 

@@ -17,32 +17,32 @@ public class TopPanel extends JMenuBar {
     /**
      * The menu item to navigate back to the main menu.
      */
-    JMenuItem back = new JMenuItem("Back");
+    final JMenuItem back = new JMenuItem("Back");
 
     /**
      * The label displaying the name of the game.
      */
-    JLabel GameName;
+    final JLabel GameName;
 
     /**
      * The menu for game options.
      */
-    JMenu options = new JMenu("Options");
+    final JMenu options = new JMenu("Options");
 
     /**
      * The menu item for starting a new game.
      */
-    JMenuItem newGame = new JMenuItem("New Game");
+    final JMenuItem newGame = new JMenuItem("New Game");
 
     /**
      * The menu item for restarting the current game.
      */
-    JMenuItem restart = new JMenuItem("Restart");
+    final JMenuItem restart = new JMenuItem("Restart");
 
     /**
      * The menu for settings.
      */
-    JMenu settings = new JMenu("Settings");
+    final JMenu settings = new JMenu("Settings");
 
     /**
      * HashMap storing size options for the game.
@@ -67,7 +67,7 @@ public class TopPanel extends JMenuBar {
         options.add(restart);
 
         newGame.addActionListener(e -> Main.gameWindow.getGameField().generateGame());
-        restart.addActionListener(e -> Main.gameWindow.getGameField().loadGame());
+        restart.addActionListener(e -> Main.gameWindow.getGameField().restart());
     }
 
     /**
