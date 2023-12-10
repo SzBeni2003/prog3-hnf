@@ -96,8 +96,11 @@ public class Untangle extends Game {
 
         setPreferredSize(new Dimension(600, 600));
         setSize(800, 750);
-        //loadGame();
-        generateGame(8);
+        try {
+            loadGame();
+        }catch (ClassNotFoundException e) {
+            generateGame(8);
+        }
 
         addMouseListener(ma);
         addMouseMotionListener(ma);
@@ -280,15 +283,17 @@ public class Untangle extends Game {
      * Loads the game from the location specified by saveFile.
      */
     @Override
-    public void loadGame() {
+    public void loadGame() throws ClassNotFoundException {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile))) {
             nodes = (Integer) ois.readObject();
             graph = (MyGraph) ois.readObject();
             prevMoves = (LinkedList<UntangleMove>) ois.readObject();
             nextMoves = (LinkedList<UntangleMove>) ois.readObject();
             gameTime=(Long) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e){
+            throw e;
         }
 
         setVisible(false);
@@ -332,12 +337,8 @@ public class Untangle extends Game {
     @Override
     public void undo() {
         UntangleMove move = prevMoves.removeFirst();
-        graph.vertices.get(move.node).setFrame(move.posFrom.x - radius, move.posFrom.y - radius, 2 * radius, 2 * radius);
-        //move.circle.setFrame(move.posFrom.x - radius, move.posFrom.y - radius, 2 * radius, 2 * radius);
-        graph.vertices.get(move.node).x = move.posFrom.x;
-        graph.vertices.get(move.node).y = move.posFrom.y;
-        //move.circle.x=move.posFrom.x;
-        //move.circle.y=move.posFrom.y;
+        move.circle.setFrame(move.posFrom.x - radius, move.posFrom.y - radius, 2 * radius, 2 * radius);
+        move.circle.setCenter(move.posFrom);
         repaint();
         nextMoves.addFirst(move);
         if (prevMoves.isEmpty()) Main.getGameWindow().getBottom().setUndo(false);
@@ -350,12 +351,8 @@ public class Untangle extends Game {
     @Override
     public void redo() {
         UntangleMove move = nextMoves.removeFirst();
-        graph.vertices.get(move.node).setFrame(move.posTo.x - radius, move.posTo.y - radius, 2 * radius, 2 * radius);
-        //move.circle..setFrame(move.posTo.x - radius, move.posTo.y - radius, 2 * radius, 2 * radius);
-        graph.vertices.get(move.node).x = move.posTo.x;
-        graph.vertices.get(move.node).y = move.posTo.y;
-        //move.circle.x = move.posTo.x;
-        //move.circle.y = move.posTo.y;
+        move.circle.setFrame(move.posTo.x - radius, move.posTo.y - radius, 2 * radius, 2 * radius);
+        move.circle.setCenter(move.posTo);
         repaint();
         prevMoves.add(move);
         if (nextMoves.isEmpty()) Main.getGameWindow().getBottom().setRedo(false);

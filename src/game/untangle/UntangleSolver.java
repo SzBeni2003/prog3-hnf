@@ -19,6 +19,7 @@ public class UntangleSolver extends Game {
         this.graph=graph;
         setMinimumSize(new Dimension(800,750));
         Main.getGameWindow().setSize(800,750);
+        Main.getGameWindow().setMinimumSize(new Dimension(600,750));
         Main.getGameWindow().setResizable(true);
         solve();
         Main.getGameWindow().getBottom().setUndo(false);
@@ -54,8 +55,7 @@ public class UntangleSolver extends Game {
                     prevMove.move.posFrom.y - radius,
                     2 * radius, 2 * radius
             );
-            prevMove.move.circle.x = prevMove.move.posFrom.x;
-            prevMove.move.circle.y = prevMove.move.posFrom.y;
+            prevMove.move.circle.setCenter(prevMove.move.posFrom);
         }
         repaint();
         nextMoves.addFirst(prevMove);
@@ -76,8 +76,7 @@ public class UntangleSolver extends Game {
                 nextMove.move.posTo.y - radius,
                 2 * radius, 2 * radius
             );
-            nextMove.move.circle.x = nextMove.move.posTo.x;
-            nextMove.move.circle.y = nextMove.move.posTo.y;
+            nextMove.move.circle.setCenter(nextMove.move.posFrom);
         }
         repaint();
         prevMoves.addFirst(nextMove);

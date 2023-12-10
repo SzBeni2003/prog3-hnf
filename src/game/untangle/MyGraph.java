@@ -16,6 +16,19 @@ public class MyGraph implements Serializable {
     public MyGraph(List<Circle> v, Set<int[]> e) {
         vertices = v;
         edges = e;
+        for(int[] edge:e){
+            addEdge(edge);
+        }
+    }
+
+    public void addEdge(Circle e1,Circle e2){
+        e1.newNeighbor(e2);
+        e2.newNeighbor(e1);
+    }
+
+    public void addEdge(int[] pair){
+        vertices.get(pair[0]).newNeighbor(vertices.get(pair[1]));
+        vertices.get(pair[1]).newNeighbor(vertices.get(pair[0]));
     }
 
     public MyGraph(int n) {
@@ -41,6 +54,7 @@ public class MyGraph implements Serializable {
             graph.addEdge(vertices.get(pair[0]), vertices.get(pair[1]));
             if (new BoyerMyrvoldPlanarityInspector<>(graph).isPlanar()) {
                 edges.add(pair);
+                addEdge(pair);
             } else {
                 graph.removeEdge(vertices.get(pair[0]), vertices.get(pair[1]));
             }
@@ -53,6 +67,7 @@ public class MyGraph implements Serializable {
                 vertices.get(e1[0]).x, vertices.get(e1[0]).y,
                 vertices.get(e1[1]).x, vertices.get(e1[1]).y,
                 vertices.get(e2[0]).x, vertices.get(e2[0]).y,
-                vertices.get(e2[1]).x, vertices.get(e2[1]).y);
+                vertices.get(e2[1]).x, vertices.get(e2[1]).y
+        );
     }
 }

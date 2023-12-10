@@ -42,6 +42,15 @@ class Circle extends Ellipse2D.Float {
         return y;
     }
 
+    public Point getCenter(){
+        return new Point(x,y);
+    }
+
+    public void setCenter(Point p){
+        x=p.x;
+        y=p.y;
+    }
+
     public Color getColor(){
         return color;
     }

@@ -97,8 +97,11 @@ public class Twiddle extends Game {
     public Twiddle() {
         saveFile = new File("saves/twiddle.ser");
         setLayout(new OverlayLayout(this));
-        loadGame();
-        //generateGame(4, true); //before new patches buildrun with this line
+        try {
+            loadGame();
+        }catch (ClassNotFoundException e) {
+            generateGame(4, true); //before new patches buildrun with this line
+        }
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -415,7 +418,7 @@ public class Twiddle extends Game {
      * Loads the game from the location specified by saveFile.
      */
     @Override
-    public void loadGame() {
+    public void loadGame() throws ClassNotFoundException {
         for (SquareRotatable sq : squares) {
             remove(sq);
         }
@@ -431,9 +434,12 @@ public class Twiddle extends Game {
             }
 
             setButtons();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        }catch (ClassNotFoundException e){
+            throw e;
         }
+
         setVisible(false);
         setVisible(true);
     }
