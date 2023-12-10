@@ -39,6 +39,8 @@ public class TopPanel extends JMenuBar {
      */
     final JMenuItem restart = new JMenuItem("Restart");
 
+    final JMenuItem solve=new JMenuItem("Show step-by-step solution");
+
     /**
      * The menu for settings.
      */
@@ -48,6 +50,8 @@ public class TopPanel extends JMenuBar {
      * HashMap storing size options for the game.
      */
     HashMap<JMenuItem, ?> sizeOptions = new HashMap<>();
+
+    JMenuItem customOption = new JMenuItem("Custom:");
 
     /**
      * Constructs the TopPanel, initializing its components and actions.
@@ -65,44 +69,15 @@ public class TopPanel extends JMenuBar {
         add(settings);
         options.add(newGame);
         options.add(restart);
+        options.add(solve);
 
         newGame.addActionListener(e -> Main.gameWindow.getGameField().generateGame());
         restart.addActionListener(e -> Main.gameWindow.getGameField().restart());
-    }
-
-    /**
-     * Sets the name of the game displayed in the panel.
-     *
-     * @param string The name of the game.
-     */
-    public void setName(String string) {
-        GameName.setText(string);
-    }
-
-    /**
-     * Sets the size options available in the settings menu.
-     *
-     * @param options The size options for the game.
-     */
-    public void setSizeOptions(HashMap<JMenuItem, ?> options) {
-        for (JMenuItem option : sizeOptions.keySet()) {
-            settings.remove(option);
-        }
-        sizeOptions = options;
-        ArrayList<JMenuItem> items = new ArrayList<>(sizeOptions.keySet().stream().toList());
-        items.sort(Comparator.comparing(JMenuItem::getText));
-        for (JMenuItem option : items) {
-            settings.add(option);
-            option.addActionListener(e -> {
-                if (Main.getGameWindow().getGameField().getGameType() == Twiddle.class) {
-                    Main.twiddle.generateGame((Twiddle.TwiddleMove) sizeOptions.get(option));
-                } else if (Main.getGameWindow().getGameField().getGameType() == Untangle.class) {
-                    Main.untangle.generateGame((int) sizeOptions.get(option));
-                }
-            });
-        }
-        JMenuItem customOption = new JMenuItem("Custom:");
-        settings.add(customOption);
+        solve.addActionListener(e->{
+            if(Main.getGameWindow().getGameField().getGameType() == Untangle.class){
+                Main.untangle.solve();
+            }
+        });
         customOption.addActionListener(e -> {
             JDialog custom = new JDialog();
             custom.setSize(300, 150);
@@ -136,5 +111,42 @@ public class TopPanel extends JMenuBar {
             });
             custom.setVisible(true);
         });
+    }
+
+    /**
+     * Sets the name of the game displayed in the panel.
+     *
+     * @param string The name of the game.
+     */
+    public void setName(String string) {
+        GameName.setText(string);
+    }
+
+    /**
+     * Sets the size options available in the settings menu.
+     *
+     * @param options The size options for the game.
+     */
+    public void setSizeOptions(HashMap<JMenuItem, ?> options) {
+        for (JMenuItem option : sizeOptions.keySet()) {
+            settings.remove(option);
+        }
+        settings.remove(customOption);
+        sizeOptions = options;
+        ArrayList<JMenuItem> items = new ArrayList<>(sizeOptions.keySet().stream().toList());
+        items.sort(Comparator.comparing(JMenuItem::getText));
+        for (JMenuItem option : items) {
+            settings.add(option);
+            option.addActionListener(e -> {
+                if (Main.getGameWindow().getGameField().getGameType() == Twiddle.class) {
+                    Main.twiddle.generateGame((Twiddle.TwiddleMove) sizeOptions.get(option));
+                } else if (Main.getGameWindow().getGameField().getGameType() == Untangle.class) {
+                    Main.untangle.generateGame((int) sizeOptions.get(option));
+                }
+            });
+        }
+
+        settings.add(customOption);
+
     }
 }

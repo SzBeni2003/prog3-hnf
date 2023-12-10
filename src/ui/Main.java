@@ -6,8 +6,8 @@ import game.twiddle.*;
 public class Main {
     static final MenuWindow menuWindow = new MenuWindow();
 
-    static final Twiddle twiddle = new Twiddle();
-    static final Untangle untangle = new Untangle();
+    public static final Twiddle twiddle = new Twiddle();
+    public static final Untangle untangle = new Untangle();
 
     static final GameWindow gameWindow = new GameWindow();
 
