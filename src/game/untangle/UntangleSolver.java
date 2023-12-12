@@ -4,8 +4,9 @@ import game.Game;
 import ui.Main;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static game.untangle.Untangle.radius;
 
@@ -13,10 +14,13 @@ public class UntangleSolver extends Game {
 
     private LinkedList<Move> prevMoves=new LinkedList<>();
     private LinkedList<Move> nextMoves=new LinkedList<>();
-    MyGraph graph;
+    static MyGraph graph;
 
     public UntangleSolver(MyGraph graph){
-        this.graph=graph;
+        this.graph=new MyGraph(graph);
+        for(Circle node:graph.vertices){
+            node.setColor();
+        }
         setMinimumSize(new Dimension(800,750));
         Main.getGameWindow().setSize(800,750);
         Main.getGameWindow().setMinimumSize(new Dimension(600,750));
@@ -30,7 +34,40 @@ public class UntangleSolver extends Game {
     public void solve(){
         Move move1=new Move();
         move1.addColorChange(graph.vertices.get(0),Color.CYAN);
+        move1.setMove(new Move.UntangleMove(0,graph.vertices.get(0).getCenter(),new Point(300,300)));
         nextMoves.add(move1);
+
+        //find a triangle
+        /*List<Circle> foundNodes=new ArrayList<>();
+        search:
+        for(Circle node1: graph.vertices){
+            foundNodes.add(node1);
+            for(Circle node2: node1.getNeighbors()){
+                foundNodes.add(node2);
+                List<Circle> commonNeighbours=graph.commonNeighbors(foundNodes);
+                if(!commonNeighbours.isEmpty()){
+                    Circle node3=commonNeighbours.getFirst();
+                    foundNodes.add(node3);
+                    Move move=new Move();
+                    move.addColorChange(node1,Color.GREEN);
+                    move.addColorChange(node2,Color.BLUE);
+                    move.addColorChange(node3,Color.RED);
+                    nextMoves.add(move);
+                    break search;
+                } else foundNodes.remove(node2);
+            }
+            foundNodes.remove(node1);
+        }
+        List<Circle> tetrahedron=graph.commonNeighbors(foundNodes);
+        Move move = new Move();
+        for(Circle c:tetrahedron) {
+            move.addColorChange(c,new Color(128,128,128));
+        }
+        nextMoves.add(move);*/
+        //List<Circle> ab=graph.commonNeighbors(foundNodes.get(0),foundNodes.get(1));ab.removeAll(tetrahedron);
+        //List<Circle> ac=graph.commonNeighbors(foundNodes.get(0),foundNodes.get(2));ac.removeAll(tetrahedron);
+        //List<Circle> bc=graph.commonNeighbors(foundNodes.get(1),foundNodes.get(2));bc.removeAll(tetrahedron);
+
     }
 
     @Override
@@ -50,11 +87,11 @@ public class UntangleSolver extends Game {
             c.setColor(prevMove.prevColors.get(c));
         }
         if(prevMove.move!=null) {
-            prevMove.move.circle.setFrame(
+            /*prevMove.move.circle.setFrame(
                     prevMove.move.posFrom.x - radius,
                     prevMove.move.posFrom.y - radius,
                     2 * radius, 2 * radius
-            );
+            );*/
             prevMove.move.circle.setCenter(prevMove.move.posFrom);
         }
         repaint();
@@ -71,12 +108,12 @@ public class UntangleSolver extends Game {
             else c.setColor(nextMove.colorChanges.get(c));
         }
         if(nextMove.move!=null){
-            nextMove.move.circle.setFrame(
+            /*nextMove.move.circle.setFrame(
                 nextMove.move.posTo.x - radius,
                 nextMove.move.posTo.y - radius,
                 2 * radius, 2 * radius
-            );
-            nextMove.move.circle.setCenter(nextMove.move.posFrom);
+            );*/
+            nextMove.move.circle.setCenter(nextMove.move.posTo);
         }
         repaint();
         prevMoves.addFirst(nextMove);
@@ -99,11 +136,22 @@ public class UntangleSolver extends Game {
     class Move{
         HashMap<Circle,Color> colorChanges=new HashMap<>();
         HashMap<Circle,Color> prevColors=new HashMap<>();
-        Untangle.UntangleMove move;
+        UntangleMove move;
+        static class UntangleMove{
+            final Circle circle;
+            final Point posFrom;
+            final Point posTo;
+            public UntangleMove(int n,Point from,Point to){
+                circle=graph.vertices.get(n);
+                posFrom=from;
+                posTo=to;
+            }
+        };
 
-        public Move(Untangle.UntangleMove umove){
+        /*public Move(UntangleMove umove){
             move=umove;
-        }
+        }*/
+
         public Move(){}
         public void addColorChange(Circle c){
             colorChanges.put(c,Color.blue);
@@ -113,7 +161,7 @@ public class UntangleSolver extends Game {
             colorChanges.put(c,col);
             if(prevColors.get(c)==null) prevColors.put(c,c.getColor());
         }
-        public void setMove(Untangle.UntangleMove umove){
+        public void setMove(UntangleMove umove){
             move=umove;
         }
     }

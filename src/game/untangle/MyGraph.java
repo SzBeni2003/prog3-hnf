@@ -21,6 +21,18 @@ public class MyGraph implements Serializable {
         }
     }
 
+    public MyGraph(MyGraph graph){
+        vertices=new ArrayList<>();
+        for(Circle c: graph.vertices){
+            Circle circle=new Circle(c);
+            vertices.add(circle);
+        }
+        edges=new HashSet<>(graph.edges);
+        for(int[] edge: graph.edges){
+            addEdge(edge);
+        }
+    }
+
     public void addEdge(Circle e1,Circle e2){
         e1.newNeighbor(e2);
         e2.newNeighbor(e1);
@@ -29,6 +41,38 @@ public class MyGraph implements Serializable {
     public void addEdge(int[] pair){
         vertices.get(pair[0]).newNeighbor(vertices.get(pair[1]));
         vertices.get(pair[1]).newNeighbor(vertices.get(pair[0]));
+    }
+
+    public List<Circle> commonNeighbors(List<Circle> nodes){
+        if(nodes.size()<=0) return new ArrayList<>();
+        ArrayList<Circle> neighbours=new ArrayList<>(vertices);
+        for(Circle node:nodes){
+            neighbours.retainAll(node.getNeighbors());
+        }
+        return neighbours;
+    }
+    public List<Circle> commonNeighbors(Circle c1, Circle c2, Circle... others){
+        ArrayList<Circle> nodes=new ArrayList<>();
+        nodes.add(c1);nodes.add(c2);
+        for(Circle other:others){
+            nodes.add(other);
+        }
+        return commonNeighbors(nodes);
+    }
+
+    public Set<Circle> neighbors(List<Circle> group){
+        HashSet<Circle> neighbours=new HashSet<>();
+        for(Circle c:group){
+            neighbours.addAll(c.getNeighbors());
+        }
+        neighbours.removeAll(group);
+        return neighbours;
+    }
+
+    public boolean connected(List<Circle> group1, List<Circle> group2){
+        Set<Circle> a=neighbors(group1);
+        a.retainAll(group2);
+        return !a.isEmpty();
     }
 
     public MyGraph(int n) {

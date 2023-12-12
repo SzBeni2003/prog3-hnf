@@ -15,12 +15,27 @@ class Circle extends Ellipse2D.Float {
 
     HashSet<Circle> neighbors=new HashSet<>();
 
+    public Circle(int x, int y){
+        this.x=x;this.y=y;
+        radius=Untangle.radius;
+        this.color=Color.BLACK;
+        setFrame(x-radius,y-radius,2*radius,2*radius);
+    }
+
+    public Circle(Circle c){
+        this.x=c.x;
+        this.y=c.y;
+        radius=c.radius;
+        this.color=Color.BLACK;
+        setFrame(x-radius,y-radius,2*radius,2*radius);
+    }
+
     public Circle(int x, int y, int radius) {
         setFrame(x - radius, y - radius, 2 * radius, 2 * radius);
         this.x = x;
         this.y = y;
         this.radius = radius;
-        this.color=Color.blue;
+        this.color=Color.BLACK;
     }
 
     public void newNeighbor(Circle c){
@@ -47,15 +62,16 @@ class Circle extends Ellipse2D.Float {
     }
 
     public void setCenter(Point p){
-        x=p.x;
-        y=p.y;
+        this.x = p.x;
+        this.y = p.y;
+        setFrame(x - radius, y - radius, 2 * radius, 2 * radius);
     }
 
     public Color getColor(){
         return color;
     }
     public void setColor(Color c){color=c;}
-    public void setColor(){color=Color.blue;}
+    public void setColor(){color=Color.BLACK;}
 
     public boolean contains2(Point p) {
         Point translated = new Point(p.x + Untangle.offset.x, p.y + Untangle.offset.y);

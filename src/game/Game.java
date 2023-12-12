@@ -5,11 +5,12 @@ import ui.Main;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.io.Serializable;
 
 public abstract class Game extends JPanel implements Serializable {
 
-    public abstract void loadGame() throws ClassNotFoundException;
+    public abstract void loadGame() throws ClassNotFoundException, IOException;
 
     public abstract void saveGame();
 

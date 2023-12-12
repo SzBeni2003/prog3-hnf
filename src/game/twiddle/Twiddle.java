@@ -1,12 +1,10 @@
 package game.twiddle;
 
 import game.Game;
-import game.untangle.Untangle;
 import ui.Main;
 
 import javax.swing.Timer;
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -99,7 +97,7 @@ public class Twiddle extends Game {
         setLayout(new OverlayLayout(this));
         try {
             loadGame();
-        }catch (ClassNotFoundException e) {
+        }catch (ClassNotFoundException | IOException e) {
             generateGame(4, true); //before new patches buildrun with this line
         }
 
@@ -418,27 +416,23 @@ public class Twiddle extends Game {
      * Loads the game from the location specified by saveFile.
      */
     @Override
-    public void loadGame() throws ClassNotFoundException {
+    public void loadGame() throws ClassNotFoundException, IOException {
         for (SquareRotatable sq : squares) {
             remove(sq);
         }
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile))) {
-            cells = (Integer) ois.readObject();
-            orientable = (Boolean) ois.readObject();
-            squares = (ArrayList<SquareRotatable>) ois.readObject();
-            prevMoves = (LinkedList<TwiddleMove>) ois.readObject();
-            nextMoves = (LinkedList<TwiddleMove>) ois.readObject();
-            gameTime=(Long) ois.readObject();
-            for (SquareRotatable sq : squares) {
-                add(sq);
-            }
-
-            setButtons();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }catch (ClassNotFoundException e){
-            throw e;
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile));
+        cells = (Integer) ois.readObject();
+        orientable = (Boolean) ois.readObject();
+        squares = (ArrayList<SquareRotatable>) ois.readObject();
+        prevMoves = (LinkedList<TwiddleMove>) ois.readObject();
+        nextMoves = (LinkedList<TwiddleMove>) ois.readObject();
+        gameTime=(Long) ois.readObject();
+        for (SquareRotatable sq : squares) {
+            add(sq);
         }
+
+        setButtons();
+
 
         setVisible(false);
         setVisible(true);

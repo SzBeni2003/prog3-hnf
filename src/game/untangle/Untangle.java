@@ -98,7 +98,7 @@ public class Untangle extends Game {
         setSize(800, 750);
         try {
             loadGame();
-        }catch (ClassNotFoundException e) {
+        }catch (ClassNotFoundException | IOException e) {
             generateGame(8);
         }
 
@@ -198,9 +198,10 @@ public class Untangle extends Game {
     public void updateLocation(MouseEvent e) {
         Point p = new Point(offset.x + e.getX(), offset.y + e.getY());
         Circle c = graph.vertices.get(nodeDragged);
-        c.setFrame(p.x - radius, p.y - radius, 2 * radius, 2 * radius);
+        /*c.setFrame(p.x - radius, p.y - radius, 2 * radius, 2 * radius);
         c.x = p.x;
-        c.y = p.y;
+        c.y = p.y;*/
+        c.setCenter(p);
         repaint();
     }
 
@@ -275,7 +276,7 @@ public class Untangle extends Game {
         nodes = n;
         generateGame();
 
-        saveGame();
+        //saveGame();
     }
 
 
@@ -283,18 +284,13 @@ public class Untangle extends Game {
      * Loads the game from the location specified by saveFile.
      */
     @Override
-    public void loadGame() throws ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile))) {
-            nodes = (Integer) ois.readObject();
-            graph = (MyGraph) ois.readObject();
-            prevMoves = (LinkedList<UntangleMove>) ois.readObject();
-            nextMoves = (LinkedList<UntangleMove>) ois.readObject();
-            gameTime=(Long) ois.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e){
-            throw e;
-        }
+    public void loadGame() throws ClassNotFoundException, IOException {
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile));
+        nodes = (Integer) ois.readObject();
+        graph = (MyGraph) ois.readObject();
+        prevMoves = (LinkedList<UntangleMove>) ois.readObject();
+        nextMoves = (LinkedList<UntangleMove>) ois.readObject();
+        gameTime=(Long) ois.readObject();
 
         setVisible(false);
         setVisible(true);
@@ -327,7 +323,9 @@ public class Untangle extends Game {
     public void solve(){
         restart();
         UntangleSolver solver=new UntangleSolver(graph);
-        while(!nextMoves.isEmpty()) redo();
+        //while(!nextMoves.isEmpty()) redo();
+        //Main.getGameWindow().getBottom().setRedo(true);
+        //Main.getGameWindow().getBottom().setUndo(false);
         Main.getGameWindow().openGame(solver);
     }
 
@@ -337,7 +335,7 @@ public class Untangle extends Game {
     @Override
     public void undo() {
         UntangleMove move = prevMoves.removeFirst();
-        move.circle.setFrame(move.posFrom.x - radius, move.posFrom.y - radius, 2 * radius, 2 * radius);
+        //move.circle.setFrame(move.posFrom.x - radius, move.posFrom.y - radius, 2 * radius, 2 * radius);
         move.circle.setCenter(move.posFrom);
         repaint();
         nextMoves.addFirst(move);
@@ -351,7 +349,7 @@ public class Untangle extends Game {
     @Override
     public void redo() {
         UntangleMove move = nextMoves.removeFirst();
-        move.circle.setFrame(move.posTo.x - radius, move.posTo.y - radius, 2 * radius, 2 * radius);
+        //move.circle.setFrame(move.posTo.x - radius, move.posTo.y - radius, 2 * radius, 2 * radius);
         move.circle.setCenter(move.posTo);
         repaint();
         prevMoves.add(move);
