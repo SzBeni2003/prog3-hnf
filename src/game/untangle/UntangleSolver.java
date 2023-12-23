@@ -4,11 +4,10 @@ import game.Game;
 import ui.Main;
 
 import java.awt.*;
-import java.util.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-
-import static game.untangle.Untangle.radius;
 
 public class UntangleSolver extends Game {
 
@@ -23,8 +22,7 @@ public class UntangleSolver extends Game {
         }
         setMinimumSize(new Dimension(800,750));
         Main.getGameWindow().setSize(800,750);
-        Main.getGameWindow().setMinimumSize(new Dimension(600,750));
-        Main.getGameWindow().setResizable(true);
+        Main.getGameWindow().setResizable(false);
         solve();
         Main.getGameWindow().getBottom().setUndo(false);
         Main.getGameWindow().getBottom().setRedo(true);
@@ -32,13 +30,13 @@ public class UntangleSolver extends Game {
     }
 
     public void solve(){
-        Move move1=new Move();
+        /*Move move1=new Move();
         move1.addColorChange(graph.vertices.get(0),Color.CYAN);
         move1.setMove(new Move.UntangleMove(0,graph.vertices.get(0).getCenter(),new Point(300,300)));
-        nextMoves.add(move1);
+        nextMoves.add(move1);*/
 
         //find a triangle
-        /*List<Circle> foundNodes=new ArrayList<>();
+        List<Circle> foundNodes=new ArrayList<>();
         search:
         for(Circle node1: graph.vertices){
             foundNodes.add(node1);
@@ -53,20 +51,69 @@ public class UntangleSolver extends Game {
                     move.addColorChange(node2,Color.BLUE);
                     move.addColorChange(node3,Color.RED);
                     nextMoves.add(move);
+                    move=new Move();
+                    move.setMove(new Move.UntangleMove(node1,node1.getCenter(),new Point(26,26)));
+                    nextMoves.add(move);
+                    move=new Move();
+                    move.setMove(new Move.UntangleMove(node2,node2.getCenter(),new Point(26,624)));
+                    nextMoves.add(move);
+                    move=new Move();
+                    move.setMove(new Move.UntangleMove(node3,node3.getCenter(),new Point(575,325)));
+                    nextMoves.add(move);
                     break search;
                 } else foundNodes.remove(node2);
             }
             foundNodes.remove(node1);
         }
-        List<Circle> tetrahedron=graph.commonNeighbors(foundNodes);
-        Move move = new Move();
-        for(Circle c:tetrahedron) {
-            move.addColorChange(c,new Color(128,128,128));
-        }
-        nextMoves.add(move);*/
+
+        solveInTriangle(foundNodes,foundNodes);
+
         //List<Circle> ab=graph.commonNeighbors(foundNodes.get(0),foundNodes.get(1));ab.removeAll(tetrahedron);
         //List<Circle> ac=graph.commonNeighbors(foundNodes.get(0),foundNodes.get(2));ac.removeAll(tetrahedron);
         //List<Circle> bc=graph.commonNeighbors(foundNodes.get(1),foundNodes.get(2));bc.removeAll(tetrahedron);
+
+    }
+
+    public void solveInTriangle(List<Circle> foundNodes, List<Circle> triangle){
+        //tetrahedrons?
+        List<Circle> tetrahedron=graph.commonNeighbors(triangle);
+        tetrahedron.retainAll(foundNodes);
+        Move move = new Move();
+        for(Circle c:tetrahedron) {
+            move.addColorChange(c,new Color(192, 192, 192));
+        }
+        nextMoves.add(move);
+
+        switch(tetrahedron.size()){
+            case 2 -> {
+                //relocation of common nodes
+                Move relocate=new Move();
+                relocate.setMove(new Move.UntangleMove(tetrahedron.get(0),tetrahedron.get(0).getCenter(),new Point(250,325)));
+                nextMoves.add(relocate);
+                relocate.setMove(new Move.UntangleMove(tetrahedron.get(1),tetrahedron.get(1).getCenter(),new Point(750,325)));
+                nextMoves.add(relocate);
+                //első
+                
+                //második
+
+            }
+            case 1 -> {
+                //node relocation
+                Move relocate=new Move();
+                relocate.setMove(new Move.UntangleMove(tetrahedron.getFirst(),tetrahedron.getFirst().getCenter(),new Point(750,325)));
+                nextMoves.add(relocate);
+                relocate.setMove(new Move.UntangleMove(triangle.get(2),triangle.get(2).getCenter(),new Point(500,325)));
+                nextMoves.add(relocate);
+                //
+
+            }
+            default -> {
+                //node relocation
+                Move relocate=new Move();
+                relocate.setMove(new Move.UntangleMove(triangle.get(2),triangle.get(2).getCenter(),new Point(750,325)));
+                nextMoves.add(relocate);
+            }
+        }
 
     }
 
@@ -146,7 +193,12 @@ public class UntangleSolver extends Game {
                 posFrom=from;
                 posTo=to;
             }
-        };
+            public UntangleMove(Circle c,Point from,Point to){
+                circle=c;
+                posFrom=from;
+                posTo=to;
+            }
+        }
 
         /*public Move(UntangleMove umove){
             move=umove;
@@ -155,11 +207,11 @@ public class UntangleSolver extends Game {
         public Move(){}
         public void addColorChange(Circle c){
             colorChanges.put(c,Color.blue);
-            if(prevColors.get(c)==null) prevColors.put(c,c.getColor());
+            prevColors.computeIfAbsent(c, Circle::getColor);
         }
         public void addColorChange(Circle c, Color col){
             colorChanges.put(c,col);
-            if(prevColors.get(c)==null) prevColors.put(c,c.getColor());
+            prevColors.computeIfAbsent(c, Circle::getColor);
         }
         public void setMove(UntangleMove umove){
             move=umove;

@@ -54,9 +54,7 @@ public class MyGraph implements Serializable {
     public List<Circle> commonNeighbors(Circle c1, Circle c2, Circle... others){
         ArrayList<Circle> nodes=new ArrayList<>();
         nodes.add(c1);nodes.add(c2);
-        for(Circle other:others){
-            nodes.add(other);
-        }
+        Collections.addAll(nodes, others);
         return commonNeighbors(nodes);
     }
 
@@ -65,7 +63,7 @@ public class MyGraph implements Serializable {
         for(Circle c:group){
             neighbours.addAll(c.getNeighbors());
         }
-        neighbours.removeAll(group);
+        group.forEach(neighbours::remove);
         return neighbours;
     }
 
@@ -73,6 +71,21 @@ public class MyGraph implements Serializable {
         Set<Circle> a=neighbors(group1);
         a.retainAll(group2);
         return !a.isEmpty();
+    }
+
+    public boolean isInsideTriangle(Circle c,List<Circle> triangle){
+        List<Circle> foundNodes=new ArrayList<>();
+        foundNodes.addAll(c.getNeighbors());
+        foundNodes.removeAll(triangle);
+        int i=0;
+        while(i < foundNodes.size()){
+            Circle current=foundNodes.get(i);
+            for(Circle node: current.getNeighbors()){
+                if(!foundNodes.contains(node) && !triangle.contains(node)) foundNodes.add(node);
+            }
+            i++;
+        }
+        return foundNodes.size() == vertices.size();
     }
 
     public MyGraph(int n) {
